@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}Employees{% endblock %}
+{% block content %}
+<div class="flex justify-between items-center mb-4">
+    <h2 class="text-2xl font-bold">Employee Directory</h2>
+    <a href="#" class="bg-primary text-white px-4 py-2 rounded-lg text-sm">Add Employee</a>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    {% for emp in employees %}
+    <div class="glass-card p-4 flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center font-bold text-slate-700">
+            {{ emp.user.get_initials }}
+        </div>
+        <div>
+            <h3 class="font-semibold">{{ emp.user.get_full_name }}</h3>
+            <p class="text-xs text-slate-500">{{ emp.department }}</p>
+            <p class="text-xs text-slate-400">ID: {{ emp.employee_id }}</p>
+        </div>
+    </div>
+    {% empty %}
+    <p class="col-span-full text-slate-500 text-center">No employees found.</p>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block title %}Delete {{ item.name }}{% endblock %}
+{% block content %}
+<div class="max-w-md mx-auto glass-card p-6 text-center">
+    <h2 class="text-xl font-bold mb-4">Delete Menu Item?</h2>
+    <p class="text-slate-500 mb-6">Are you sure you want to permanently delete <strong>{{ item.name }}</strong>?</p>
+    <form method="post">
+        {% csrf_token %}
+        <div class="flex justify-center space-x-3">
+            <a href="{% url 'restaurant_menu' %}" class="bg-slate-200 text-slate-700 px-4 py-2 rounded-lg hover:bg-slate-300 transition">Cancel</a>
+            <button type="submit" class="bg-rose-500 hover:bg-rose-600 text-white px-4 py-2 rounded-lg transition">Delete</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

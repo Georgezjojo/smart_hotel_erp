@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block title %}Staff Management{% endblock %}
+{% block content %}
+<div class="glass-card p-6">
+    <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-bold text-slate-800">Staff Members</h2>
+        <a href="#" class="bg-primary text-white px-4 py-2 rounded-lg text-sm">Add Staff</a>
+    </div>
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm text-left">
+            <thead class="bg-slate-100">
+                <tr>
+                    <th class="p-3">Name</th>
+                    <th class="p-3">Email</th>
+                    <th class="p-3">Role</th>
+                    <th class="p-3">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for member in staff %}
+                <tr class="border-b border-slate-100">
+                    <td class="p-3">{{ member.get_full_name }}</td>
+                    <td class="p-3">{{ member.email }}</td>
+                    <td class="p-3">{{ member.get_role_display }}</td>
+                    <td class="p-3">
+                        <a href="#" class="text-primary hover:underline">Edit</a>
+                        {% if member.id != user.id %}
+                            | <a href="#" class="text-rose-600 hover:underline">Deactivate</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="4" class="p-3 text-center text-slate-500">No staff members yet.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+{% block title %}Staff & HR{% endblock %}
+{% block content %}
+
+<!-- Summary Cards -->
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+    <div class="glass-card p-3 flex items-center space-x-3">
+        <div class="p-2 bg-slate-100 dark:bg-slate-800 rounded-lg text-slate-500"><i class="fa-solid fa-users"></i></div>
+        <div>
+            <p class="text-[10px] text-slate-400 uppercase">Total Staff</p>
+            <p class="font-bold text-lg">{{ total_employees }}</p>
+        </div>
+    </div>
+    <div class="glass-card p-3 flex items-center space-x-3">
+        <div class="p-2 bg-emerald-100 text-emerald-600 rounded-lg"><i class="fa-solid fa-user-check"></i></div>
+        <div>
+            <p class="text-[10px] text-slate-400 uppercase">Present Today</p>
+            <p class="font-bold text-lg">{{ present_today }}</p>
+        </div>
+    </div>
+    <div class="glass-card p-3 flex items-center space-x-3">
+        <div class="p-2 bg-rose-100 text-rose-600 rounded-lg"><i class="fa-solid fa-user-xmark"></i></div>
+        <div>
+            <p class="text-[10px] text-slate-400 uppercase">Absent Today</p>
+            <p class="font-bold text-lg">{{ absent_today }}</p>
+        </div>
+    </div>
+    <div class="glass-card p-3 flex items-center space-x-3">
+        <div class="p-2 bg-indigo-100 text-indigo-600 rounded-lg"><i class="fa-solid fa-building"></i></div>
+        <div>
+            <p class="text-[10px] text-slate-400 uppercase">Departments</p>
+            <p class="font-bold text-lg">{{ departments }}</p>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="flex flex-wrap gap-2 mb-6">
+    <a href="{% url 'employee_list' %}" class="bg-primary hover:bg-primaryDark text-white px-4 py-2 rounded-lg text-sm font-semibold transition flex items-center space-x-2">
+        <i class="fa-solid fa-users"></i> <span>Employee Directory</span>
+    </a>
+    <a href="{% url 'attendance_list' %}" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-semibold transition flex items-center space-x-2">
+        <i class="fa-solid fa-calendar-check"></i> <span>Attendance</span>
+    </a>
+    <a href="#" class="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-semibold transition flex items-center space-x-2">
+        <i class="fa-solid fa-plus"></i> <span>Add Employee</span>
+    </a>
+    <a href="#" class="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg text-sm font-semibold transition flex items-center space-x-2">
+        <i class="fa-solid fa-clock"></i> <span>Mark Attendance</span>
+    </a>
+</div>
+
+<!-- Two-column layout -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Recent Hires -->
+    <div class="glass-card p-4">
+        <div class="flex justify-between items-center mb-3">
+            <h3 class="font-bold text-slate-800 dark:text-white"><i class="fa-solid fa-user-plus text-primary mr-2"></i> Recent Hires</h3>
+            <a href="{% url 'employee_list' %}" class="text-xs text-primary hover:underline">View All</a>
+        </div>
+        <ul class="space-y-2">
+            {% for emp in recent_hires %}
+            <li class="flex items-center justify-between p-2 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 text-primary flex items-center justify-center font-bold text-xs">
+                        {{ emp.user.get_initials }}
+                    </div>
+                    <div>
+                        <p class="font-medium text-sm">{{ emp.user.get_full_name }}</p>
+                        <p class="text-xs text-slate-500">{{ emp.department }}</p>
+                    </div>
+                </div>
+                <span class="text-xs text-slate-400">{{ emp.hire_date|date:"M d" }}</span>
+            </li>
+            {% empty %}
+            <li class="text-slate-500 text-sm">No recent hires.</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- Today's Attendance Quick View -->
+    <div class="glass-card p-4">
+        <div class="flex justify-between items-center mb-3">
+            <h3 class="font-bold text-slate-800 dark:text-white"><i class="fa-solid fa-calendar-day text-primary mr-2"></i> Today's Attendance</h3>
+            <a href="{% url 'attendance_list' %}" class="text-xs text-primary hover:underline">View All</a>
+        </div>
+        <div class="flex items-center justify-around py-4">
+            <div class="text-center">
+                <div class="text-3xl font-bold text-emerald-600">{{ present_today }}</div>
+                <p class="text-xs text-slate-500">Present</p>
+            </div>
+            <div class="w-px h-10 bg-slate-200 dark:bg-slate-700"></div>
+            <div class="text-center">
+                <div class="text-3xl font-bold text-rose-600">{{ absent_today }}</div>
+                <p class="text-xs text-slate-500">Absent</p>
+            </div>
+        </div>
+        <!-- Progress bar for attendance rate -->
+        <div class="mt-2">
+            <div class="flex justify-between text-xs mb-1">
+                <span>Attendance Rate</span>
+                <span class="font-semibold">
+                    {% if total_employees > 0 %}
+                        {{ present_today|floatformat:0 }}%
+                    {% else %}
+                        0%
+                    {% endif %}
+                </span>
+            </div>
+            <div class="w-full bg-slate-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden">
+                <div class="bg-primary h-full rounded-full attendance-bar" data-width="{% if total_employees > 0 %}{{ present_today|floatformat:0 }}{% else %}0{% endif %}"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // Set the attendance bar width using the data attribute (avoids CSS linter errors)
+    const bar = document.querySelector('.attendance-bar');
+    if (bar) {
+        bar.style.width = bar.dataset.width + '%';
+    }
+</script>
+{% endblock %}

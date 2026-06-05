@@ -1,0 +1,227 @@
+{% extends 'base.html' %}
+{% block title %}Housekeeping{% endblock %}
+{% block content %}
+
+<!-- Summary Cards -->
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+    <div class="glass-card p-3 flex items-center space-x-3">
+        <div class="p-2 bg-amber-100 text-amber-600 rounded-lg"><i class="fa-solid fa-clock"></i></div>
+        <div>
+            <p class="text-[10px] text-slate-400 uppercase">Pending</p>
+            <p class="font-bold text-lg" id="pendingCount">{{ pending_count }}</p>
+        </div>
+    </div>
+    <div class="glass-card p-3 flex items-center space-x-3">
+        <div class="p-2 bg-blue-100 text-blue-600 rounded-lg"><i class="fa-solid fa-spinner"></i></div>
+        <div>
+            <p class="text-[10px] text-slate-400 uppercase">In Progress</p>
+            <p class="font-bold text-lg" id="inProgressCount">{{ in_progress_count }}</p>
+        </div>
+    </div>
+    <div class="glass-card p-3 flex items-center space-x-3">
+        <div class="p-2 bg-emerald-100 text-emerald-600 rounded-lg"><i class="fa-solid fa-check-circle"></i></div>
+        <div>
+            <p class="text-[10px] text-slate-400 uppercase">Completed</p>
+            <p class="font-bold text-lg" id="completedCount">{{ completed_count }}</p>
+        </div>
+    </div>
+    <div class="glass-card p-3 flex items-center space-x-3">
+        <div class="p-2 bg-slate-100 text-slate-600 rounded-lg"><i class="fa-solid fa-list-check"></i></div>
+        <div>
+            <p class="text-[10px] text-slate-400 uppercase">Total Tasks</p>
+            <p class="font-bold text-lg" id="totalCount">{{ tasks|length }}</p>
+        </div>
+    </div>
+</div>
+
+<!-- Filter Bar -->
+<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+    <h2 class="text-2xl font-bold text-slate-800 dark:text-white">Room Cleaning Tasks</h2>
+    <div class="relative">
+        <select id="statusFilter" class="appearance-none bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition">
+            <option value="all">All Statuses</option>
+            <option value="pending">Pending</option>
+            <option value="in_progress">In Progress</option>
+            <option value="completed">Completed</option>
+        </select>
+        <i class="fa-solid fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
+    </div>
+</div>
+
+<!-- Task Cards Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4" id="taskGrid">
+    {% for task in tasks %}
+    <div class="task-card glass-card overflow-hidden group transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer"
+         data-task-id="{{ task.id }}" data-status="{{ task.status }}">
+        
+        <!-- Status Ribbon -->
+        <div class="h-2 
+            {% if task.status == 'pending' %}bg-amber-400
+            {% elif task.status == 'in_progress' %}bg-blue-400
+            {% else %}bg-emerald-400{% endif %}"></div>
+
+        <div class="p-4">
+            <div class="flex items-center justify-between mb-3">
+                <h3 class="font-bold text-slate-800 dark:text-white">Room {{ task.room.room_number }}</h3>
+                <span class="status-badge text-xs px-2 py-0.5 rounded-full font-semibold
+                    {% if task.status == 'pending' %}bg-amber-100 text-amber-700 border border-amber-200
+                    {% elif task.status == 'in_progress' %}bg-blue-100 text-blue-700 border border-blue-200
+                    {% else %}bg-emerald-100 text-emerald-700 border border-emerald-200{% endif %}">
+                    {{ task.get_status_display }}
+                </span>
+            </div>
+
+            <div class="space-y-2 text-xs text-slate-600 dark:text-slate-300">
+                <p><i class="fa-solid fa-broom mr-2 text-primary"></i> {{ task.task_type|title }}</p>
+                <p><i class="fa-solid fa-user mr-2 text-primary"></i> {{ task.assigned_to.get_full_name|default:"Unassigned" }}</p>
+                <p><i class="fa-solid fa-clock mr-2 text-primary"></i> Created {{ task.created_at|date:"M d, H:i" }}</p>
+                {% if task.completed_at %}
+                    <p><i class="fa-solid fa-check mr-2 text-emerald-500"></i> Completed {{ task.completed_at|date:"M d, H:i" }}</p>
+                {% endif %}
+            </div>
+
+            <!-- Action Buttons – ALWAYS visible, no hover needed -->
+            <div class="mt-3 flex space-x-2">
+                {% if task.status == 'pending' %}
+                <button class="flex-1 bg-blue-500 hover:bg-blue-600 text-white text-xs px-2 py-1.5 rounded transition start-task">
+                    <i class="fa-solid fa-play mr-1"></i> Start
+                </button>
+                {% elif task.status == 'in_progress' %}
+                <button class="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white text-xs px-2 py-1.5 rounded transition complete-task">
+                    <i class="fa-solid fa-check mr-1"></i> Complete
+                </button>
+                <button class="flex-1 bg-amber-500 hover:bg-amber-600 text-white text-xs px-2 py-1.5 rounded transition revert-task">
+                    <i class="fa-solid fa-undo mr-1"></i> Revert
+                </button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-span-full text-center py-12 text-slate-500">
+        <i class="fa-solid fa-check-circle text-4xl mb-3 opacity-50"></i>
+        <p>All rooms are clean! No pending tasks.</p>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // Helper to get CSRF token from cookies
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const filterSelect = document.getElementById('statusFilter');
+        const cards = document.querySelectorAll('.task-card');
+
+        function updateCounts() {
+            let pending = 0, inProgress = 0, completed = 0, total = 0;
+            cards.forEach(card => {
+                if (card.style.display === 'none') return;
+                total++;
+                const status = card.dataset.status;
+                if (status === 'pending') pending++;
+                else if (status === 'in_progress') inProgress++;
+                else if (status === 'completed') completed++;
+            });
+            document.getElementById('pendingCount').textContent = pending;
+            document.getElementById('inProgressCount').textContent = inProgress;
+            document.getElementById('completedCount').textContent = completed;
+            document.getElementById('totalCount').textContent = total;
+        }
+
+        // Initial counts
+        updateCounts();
+
+        filterSelect.addEventListener('change', function() {
+            const value = this.value;
+            cards.forEach(card => {
+                card.style.display = (value === 'all' || card.dataset.status === value) ? '' : 'none';
+            });
+            updateCounts();
+        });
+
+        // Delegate click events for action buttons
+        document.getElementById('taskGrid').addEventListener('click', async function(e) {
+            const btn = e.target.closest('button');
+            if (!btn) return;
+            const card = btn.closest('.task-card');
+            if (!card) return;
+            const taskId = card.dataset.taskId;   // data-task-id becomes dataset.taskId
+            if (!taskId) {
+                console.error('Missing task ID');
+                return;
+            }
+            let newStatus;
+
+            if (btn.classList.contains('start-task')) {
+                newStatus = 'in_progress';
+            } else if (btn.classList.contains('complete-task')) {
+                newStatus = 'completed';
+            } else if (btn.classList.contains('revert-task')) {
+                newStatus = 'pending';
+            } else return;
+
+            try {
+                const response = await fetch(`/housekeeping/update-status/${taskId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken'),
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `status=${newStatus}`
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    // Update card UI
+                    card.dataset.status = newStatus;
+                    const badge = card.querySelector('.status-badge');
+                    badge.className = 'status-badge text-xs px-2 py-0.5 rounded-full font-semibold';
+                    if (newStatus === 'pending') badge.classList.add('bg-amber-100', 'text-amber-700', 'border', 'border-amber-200');
+                    else if (newStatus === 'in_progress') badge.classList.add('bg-blue-100', 'text-blue-700', 'border', 'border-blue-200');
+                    else badge.classList.add('bg-emerald-100', 'text-emerald-700', 'border', 'border-emerald-200');
+                    badge.textContent = data.new_status;
+
+                    // Update ribbon color
+                    const ribbon = card.querySelector('.h-2');
+                    ribbon.className = 'h-2';
+                    if (newStatus === 'pending') ribbon.classList.add('bg-amber-400');
+                    else if (newStatus === 'in_progress') ribbon.classList.add('bg-blue-400');
+                    else ribbon.classList.add('bg-emerald-400');
+
+                    // Replace action buttons
+                    const actionDiv = card.querySelector('.flex.space-x-2');
+                    if (newStatus === 'pending') {
+                        actionDiv.innerHTML = `<button class="flex-1 bg-blue-500 hover:bg-blue-600 text-white text-xs px-2 py-1.5 rounded transition start-task"><i class="fa-solid fa-play mr-1"></i> Start</button>`;
+                    } else if (newStatus === 'in_progress') {
+                        actionDiv.innerHTML = `
+                            <button class="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white text-xs px-2 py-1.5 rounded transition complete-task"><i class="fa-solid fa-check mr-1"></i> Complete</button>
+                            <button class="flex-1 bg-amber-500 hover:bg-amber-600 text-white text-xs px-2 py-1.5 rounded transition revert-task"><i class="fa-solid fa-undo mr-1"></i> Revert</button>
+                        `;
+                    } else {
+                        actionDiv.innerHTML = '';
+                    }
+                    updateCounts();
+                }
+            } catch (err) {
+                console.error('Update failed', err);
+            }
+        });
+    });
+</script>
+{% endblock %}

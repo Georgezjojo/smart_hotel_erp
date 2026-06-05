@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% block title %}Report Details – {{ report|title }}{% endblock %}
+{% block content %}
+<div class="max-w-4xl mx-auto glass-card p-6 space-y-6">
+    <a href="{% url 'analytics' %}" class="text-sm text-primary hover:underline">
+        <i class="fa-solid fa-arrow-left mr-1"></i> Back to Reports
+    </a>
+    <h2 class="text-2xl font-bold text-slate-800 dark:text-white">{{ report|title }} – Detailed Calculation</h2>
+    <p class="text-sm text-slate-500">Period: {{ start_date|date:"M d, Y" }} – {{ end_date|date:"M d, Y" }}</p>
+
+    {% if report == 'profit_loss' %}
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <h3 class="font-bold text-lg mb-3 text-emerald-600">Income Sources</h3>
+                <table class="w-full text-sm">
+                    <thead><tr class="border-b"><th class="text-left pb-2">Item</th><th class="text-right pb-2">Amount</th></tr></thead>
+                    <tbody>
+                        {% for entry in income_items %}
+                        <tr class="border-b border-slate-100">
+                            <td class="py-2">{{ entry.description }}</td>
+                            <td class="py-2 text-right">₹{{ entry.amount|floatformat:2 }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="2" class="py-2 text-slate-500">No income entries.</td></tr>
+                        {% endfor %}
+                        <tr class="font-bold"><td class="py-2">Total Income</td><td class="py-2 text-right">₹{{ total_income|floatformat:2 }}</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div>
+                <h3 class="font-bold text-lg mb-3 text-rose-600">Expense Items</h3>
+                <table class="w-full text-sm">
+                    <thead><tr class="border-b"><th class="text-left pb-2">Item</th><th class="text-right pb-2">Amount</th></tr></thead>
+                    <tbody>
+                        {% for entry in expense_items %}
+                        <tr class="border-b border-slate-100">
+                            <td class="py-2">{{ entry.description }}</td>
+                            <td class="py-2 text-right">₹{{ entry.amount|floatformat:2 }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="2" class="py-2 text-slate-500">No expense entries.</td></tr>
+                        {% endfor %}
+                        <tr class="font-bold"><td class="py-2">Total Expenses</td><td class="py-2 text-right">₹{{ total_expenses|floatformat:2 }}</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl text-center">
+            <h3 class="text-xl font-bold">Net Profit = ₹{{ total_income|floatformat:2 }} - ₹{{ total_expenses|floatformat:2 }} = <span class="text-blue-600">₹{{ profit|floatformat:2 }}</span></h3>
+        </div>
+    {% elif report == 'balance_sheet' %}
+        <!-- similar structure with assets and liabilities list -->
+    {% elif report == 'cash_flow' %}
+        <!-- cash_in and cash_out breakdown -->
+    {% else %}
+        <p class="text-slate-500">Detailed calculation for this report is not yet available.</p>
+    {% endif %}
+
+    <div class="text-center text-xs text-slate-400 mt-6">
+        <p>Generated on {{ generated|date:"M d, Y H:i" }} by Grand Horizon ERP</p>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block title %}Room {{ room.room_number }}{% endblock %}
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <a href="{% url 'room_list' %}" class="text-primary hover:underline inline-block mb-4">
+        <i class="fa-solid fa-arrow-left mr-1"></i> Back to Rooms
+    </a>
+
+    <div class="glass-card overflow-hidden">
+        <!-- Room Image -->
+        <div class="h-64 bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center">
+            {% if room.image %}
+                <img src="{{ room.image.url }}" class="w-full h-full object-cover">
+            {% else %}
+                <i class="fa-solid fa-bed text-6xl text-slate-300"></i>
+            {% endif %}
+        </div>
+
+        <!-- Details -->
+        <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <h2 class="text-2xl font-bold text-slate-800 dark:text-white mb-2">{{ room.room_number }}</h2>
+                <span class="px-2 py-0.5 rounded-full text-xs font-bold uppercase
+                    {% if room.status == 'available' %}bg-emerald-100 text-emerald-700
+                    {% elif room.status == 'occupied' %}bg-blue-100 text-blue-700
+                    {% elif room.status == 'cleaning' %}bg-amber-100 text-amber-700
+                    {% else %}bg-rose-100 text-rose-700{% endif %}">
+                    {{ room.get_status_display }}
+                </span>
+                <ul class="mt-4 space-y-2 text-sm text-slate-600 dark:text-slate-300">
+                    <li><i class="fa-solid fa-layer-group mr-2 text-primary"></i> <strong>Type:</strong> {{ room.room_type.name }}</li>
+                    <li><i class="fa-solid fa-building mr-2 text-primary"></i> <strong>Floor:</strong> {{ room.floor }}</li>
+                    <li><i class="fa-solid fa-users mr-2 text-primary"></i> <strong>Max Occupancy:</strong> {{ room.room_type.max_occupancy }}</li>
+                    <li><i class="fa-solid fa-indian-rupee-sign mr-2 text-primary"></i> <strong>Base Rate:</strong> ₹{{ room.room_type.base_rate }}/night</li>
+                </ul>
+            </div>
+            <div class="flex flex-col justify-center">
+                {% if room.status == 'available' %}
+                    <a href="{% url 'add_booking' %}?room={{ room.room_number }}" class="bg-primary hover:bg-primaryDark text-white text-center px-6 py-3 rounded-lg font-semibold transition mb-2">
+                        <i class="fa-solid fa-calendar-plus mr-2"></i> Book Now
+                    </a>
+                {% endif %}
+                <a href="{% url 'room_list' %}" class="text-primary hover:underline text-center text-sm">View All Rooms</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends 'base_public.html' %}
+{% block title %}Contact Us – Grand Horizon{% endblock %}
+{% block content %}
+<div class="max-w-2xl mx-auto py-16 px-4">
+    <a href="javascript:history.back()" class="text-primary hover:underline mb-4 inline-block"><i class="fa-solid fa-arrow-left mr-1"></i> Back</a>
+    <div class="glass-card p-8 animate__animated animate__fadeIn">
+        <h1 class="text-3xl font-bold mb-6">Contact Us</h1>
+        <p class="text-slate-600 mb-6">We’d love to hear from you. Reach out using the details below or visit our hotel.</p>
+        
+        <div class="space-y-4 text-slate-700">
+            <div class="flex items-center space-x-3">
+                <i class="fa-solid fa-phone text-primary text-xl"></i>
+                <span>+254 700 000 000</span>
+            </div>
+            <div class="flex items-center space-x-3">
+                <i class="fa-solid fa-envelope text-primary text-xl"></i>
+                <span>info@grandhorizon.com</span>
+            </div>
+            <div class="flex items-center space-x-3">
+                <i class="fa-solid fa-map-marker-alt text-primary text-xl"></i>
+                <span>Nairobi CBD, Kenya</span>
+            </div>
+        </div>
+        
+        <hr class="my-6 border-slate-200">
+        <h2 class="text-xl font-semibold mb-4">Send us a message</h2>
+        <form class="space-y-4">
+            <div>
+                <label class="block text-xs font-semibold uppercase mb-1">Your Name</label>
+                <input type="text" required class="w-full border border-slate-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none">
+            </div>
+            <div>
+                <label class="block text-xs font-semibold uppercase mb-1">Email</label>
+                <input type="email" required class="w-full border border-slate-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none">
+            </div>
+            <div>
+                <label class="block text-xs font-semibold uppercase mb-1">Message</label>
+                <textarea rows="4" required class="w-full border border-slate-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"></textarea>
+            </div>
+            <button type="submit" class="bg-primary hover:bg-primaryDark text-white font-semibold py-2.5 px-6 rounded-lg transition shadow-md">
+                Send Message
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{% if form.instance.pk %}Edit{% else %}Add{% endif %} Menu Item{% endblock %}
+{% block content %}
+<div class="max-w-2xl mx-auto glass-card p-6">
+    <a href="{% url 'restaurant_menu' %}" class="text-slate-500 hover:text-primary inline-block mb-4">
+        <i class="fa-solid fa-arrow-left mr-1"></i> Back to Menu
+    </a>
+    <h2 class="text-2xl font-bold text-slate-800 dark:text-white mb-6">
+        {% if form.instance.pk %}Edit{% else %}Add New{% endif %} Menu Item
+    </h2>
+    <form method="post" enctype="multipart/form-data" class="space-y-4">
+        {% csrf_token %}
+        <div>
+            <label class="block text-xs font-semibold uppercase mb-1">Name</label>
+            {{ form.name }}
+        </div>
+        <div>
+            <label class="block text-xs font-semibold uppercase mb-1">Category</label>
+            {{ form.category }}
+        </div>
+        <div>
+            <label class="block text-xs font-semibold uppercase mb-1">Price (₹)</label>
+            {{ form.price }}
+        </div>
+        <div>
+            <label class="block text-xs font-semibold uppercase mb-1">Image</label>
+            {{ form.image }}
+            <p class="text-xs text-slate-400 mt-1">Upload a beautiful photo (JPEG/PNG). Leave blank to keep current.</p>
+        </div>
+        <div class="flex items-center space-x-2">
+            {{ form.available }}
+            <label class="text-sm">Available for ordering</label>
+        </div>
+        <button type="submit" class="w-full bg-primary hover:bg-primaryDark text-white font-semibold py-2.5 rounded-lg transition shadow-md">
+            {% if form.instance.pk %}Update{% else %}Create{% endif %} Item
+        </button>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block title %}Book a Room{% endblock %}
+{% block content %}
+<h2 class="text-2xl font-bold mb-4">Search & Book</h2>
+<form method="get" class="glass-card p-4 flex flex-wrap gap-4">
+    <div>
+        <label class="text-xs font-semibold">Check‑in</label>
+        <input type="date" name="check_in" class="border rounded px-3 py-2 text-sm">
+    </div>
+    <div>
+        <label class="text-xs font-semibold">Check‑out</label>
+        <input type="date" name="check_out" class="border rounded px-3 py-2 text-sm">
+    </div>
+    <div class="self-end">
+        <button type="submit" class="bg-primary text-white px-4 py-2 rounded text-sm">Search Rooms</button>
+    </div>
+</form>
+<div id="available-rooms" class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+    <!-- Rooms will be loaded via API -->
+</div>
+{% endblock %}

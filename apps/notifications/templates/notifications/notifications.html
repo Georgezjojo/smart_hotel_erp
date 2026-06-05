@@ -1,0 +1,179 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Notifications{% endblock %}
+{% block content %}
+<div class="space-y-6 animate__animated animate__fadeInUp">
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+            <h1 class="text-3xl font-bold text-slate-800 dark:text-white flex items-center space-x-3">
+                <i class="fa-solid fa-bell text-primary text-3xl"></i>
+                <span>Notifications</span>
+                <span id="unreadBadge" class="ml-2 px-3 py-1 text-xs font-bold bg-primary text-white rounded-full hidden">0</span>
+            </h1>
+            <p class="text-slate-500 dark:text-slate-400 mt-1">Stay updated with your latest alerts and messages.</p>
+        </div>
+        <div class="flex items-center space-x-3">
+            <button id="markAllReadBtn" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-semibold transition hidden">
+                <i class="fa-solid fa-check-double mr-1"></i> Mark All Read
+            </button>
+            <button id="deleteAllBtn" class="bg-rose-500 hover:bg-rose-600 text-white px-4 py-2 rounded-lg text-sm font-semibold transition hidden">
+                <i class="fa-solid fa-trash-can mr-1"></i> Delete All
+            </button>
+        </div>
+    </div>
+
+    <!-- Notifications List -->
+    <div id="notificationList" class="space-y-4">
+        <!-- Loading -->
+        <div class="text-center py-12">
+            <i class="fa-solid fa-spinner fa-spin text-3xl text-primary"></i>
+            <p class="text-slate-500 mt-3">Loading notifications...</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    async function fetchNotifications() {
+        const list = document.getElementById('notificationList');
+        try {
+            const res = await fetch('/notifications/api/notifications/');
+            if (!res.ok) throw new Error('Failed');
+            const data = await res.json();
+
+            const unread = data.filter(n => !n.is_read).length;
+            const badge = document.getElementById('unreadBadge');
+            const markAllBtn = document.getElementById('markAllReadBtn');
+            const deleteAllBtn = document.getElementById('deleteAllBtn');
+
+            if (unread > 0) {
+                badge.textContent = unread;
+                badge.classList.remove('hidden');
+                markAllBtn.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+                markAllBtn.classList.add('hidden');
+            }
+
+            if (data.length > 0) {
+                deleteAllBtn.classList.remove('hidden');
+            } else {
+                deleteAllBtn.classList.add('hidden');
+                markAllBtn.classList.add('hidden');
+            }
+
+            if (data.length === 0) {
+                list.innerHTML = `
+                    <div class="glass-card p-8 text-center">
+                        <i class="fa-solid fa-bell-slash text-5xl text-slate-300 mb-4"></i>
+                        <h3 class="text-xl font-bold text-slate-600 dark:text-slate-400">No Notifications</h3>
+                        <p class="text-slate-500 mt-2">You're all caught up! New notifications will appear here.</p>
+                    </div>`;
+                return;
+            }
+
+            list.innerHTML = data.map(n => `
+                <div class="glass-card p-5 flex items-start space-x-4 transition-all duration-300 hover:shadow-lg ${!n.is_read ? 'border-l-4 border-primary bg-primary/5' : ''}">
+                    <div class="shrink-0">
+                        <div class="w-12 h-12 rounded-full ${n.is_read ? 'bg-slate-200 dark:bg-slate-700' : 'bg-primary/20'} flex items-center justify-center text-xl">
+                            <i class="fa-solid ${n.is_read ? 'fa-envelope-open text-slate-500' : 'fa-envelope text-primary'}"></i>
+                        </div>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-base font-semibold ${n.is_read ? 'text-slate-600 dark:text-slate-400' : 'text-slate-800 dark:text-white'}">
+                            ${n.message}
+                        </p>
+                        <span class="text-sm text-slate-400">${new Date(n.created_at).toLocaleString()}</span>
+                    </div>
+                    <div class="flex items-center space-x-2 shrink-0">
+                        ${!n.is_read ? `
+                            <button onclick="markAsRead(${n.id})" class="bg-blue-100 hover:bg-blue-200 text-blue-700 px-3 py-1.5 rounded-lg text-sm font-medium transition" title="Mark as read">
+                                <i class="fa-solid fa-check mr-1"></i> Read
+                            </button>
+                        ` : ''}
+                        <button onclick="deleteNotification(${n.id})" class="bg-rose-100 hover:bg-rose-200 text-rose-700 px-3 py-1.5 rounded-lg text-sm font-medium transition" title="Delete">
+                            <i class="fa-solid fa-trash mr-1"></i> Delete
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+
+        } catch (err) {
+            list.innerHTML = `<p class="text-center text-rose-500 py-8">Failed to load notifications.</p>`;
+        }
+    }
+
+    async function markAsRead(id) {
+        try {
+            await fetch(`/notifications/api/notifications/${id}/mark_read/`, {
+                method: 'PATCH',
+                headers: { 'X-CSRFToken': getCookie('csrftoken') }
+            });
+            fetchNotifications();
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    async function deleteNotification(id) {
+        if (!confirm('Delete this notification?')) return;
+        try {
+            await fetch(`/notifications/api/notifications/${id}/`, {
+                method: 'DELETE',
+                headers: { 'X-CSRFToken': getCookie('csrftoken') }
+            });
+            fetchNotifications();
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    async function deleteAllNotifications() {
+        if (!confirm('Delete all notifications?')) return;
+        try {
+            await fetch(`/notifications/api/notifications/delete_all/`, {
+                method: 'DELETE',
+                headers: { 'X-CSRFToken': getCookie('csrftoken') }
+            });
+            fetchNotifications();
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    async function markAllAsRead() {
+        try {
+            await fetch(`/notifications/api/notifications/mark_all_read/`, {
+                method: 'PATCH',
+                headers: { 'X-CSRFToken': getCookie('csrftoken') }
+            });
+            fetchNotifications();
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        fetchNotifications();
+        document.getElementById('deleteAllBtn').addEventListener('click', deleteAllNotifications);
+        document.getElementById('markAllReadBtn').addEventListener('click', markAllAsRead);
+    });
+</script>
+{% endblock %}

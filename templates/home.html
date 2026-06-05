@@ -1,0 +1,251 @@
+{% extends 'base_public.html' %}
+{% load static %}
+{% block title %}Grand Horizon – Luxury Hotel{% endblock %}
+{% block extra_head %}
+<style>
+    /* Smooth scroll for anchor links */
+    html {
+        scroll-behavior: smooth;
+    }
+    /* Hero background image (replace with your own) */
+    .hero-bg {
+        background-image: url('https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2070&q=80');
+        background-size: cover;
+        background-position: center;
+    }
+    /* Overlay for better text readability */
+    .hero-overlay {
+        background: linear-gradient(to bottom, rgba(0,0,0,0.4), rgba(0,0,0,0.6));
+    }
+    /* Number counter animation */
+    @keyframes countUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-counter {
+        animation: countUp 1s ease-out forwards;
+    }
+</style>
+{% endblock %}
+{% block content %}
+
+<!-- ===== HERO SECTION ===== -->
+<section class="hero-bg relative flex items-center justify-center min-h-screen">
+    <div class="hero-overlay absolute inset-0"></div>
+    <div class="relative z-10 max-w-7xl mx-auto px-4 text-center text-white">
+        <h1 class="text-4xl md:text-7xl font-extrabold mb-6 leading-tight animate__animated animate__fadeInDown">
+            Experience <span class="text-primary">Grand Horizon</span>
+        </h1>
+        <p class="text-lg md:text-2xl mb-12 max-w-3xl mx-auto animate__animated animate__fadeInUp">
+            Where luxury meets comfort. Book your dream stay and enjoy world‑class dining, spa, and breathtaking views.
+        </p>
+        
+        <!-- Booking Search Form (visual) -->
+        <div class="glass-card p-6 bg-white/20 backdrop-blur-md rounded-2xl max-w-4xl mx-auto animate__animated animate__fadeInUp animate__delay-1s">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div>
+                    <label class="block text-sm font-semibold mb-1 text-white/80">Check‑in</label>
+                    <input type="date" class="w-full bg-white/90 border-0 rounded-lg px-4 py-3 text-slate-800 focus:ring-2 focus:ring-primary">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-1 text-white/80">Check‑out</label>
+                    <input type="date" class="w-full bg-white/90 border-0 rounded-lg px-4 py-3 text-slate-800 focus:ring-2 focus:ring-primary">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-1 text-white/80">Guests</label>
+                    <select class="w-full bg-white/90 border-0 rounded-lg px-4 py-3 text-slate-800 focus:ring-2 focus:ring-primary">
+                        <option>1 Guest</option>
+                        <option>2 Guests</option>
+                        <option>3 Guests</option>
+                        <option>4+ Guests</option>
+                    </select>
+                </div>
+                <div class="flex items-end">
+                    <button class="w-full bg-primary hover:bg-primaryDark text-white font-bold py-3 rounded-lg transition transform hover:scale-105">
+                        Check Availability
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== ROOM TYPES SHOWCASE ===== -->
+<section id="rooms" class="py-20 max-w-7xl mx-auto px-4">
+    <div class="text-center mb-16">
+        <h2 class="text-4xl font-bold text-slate-800 mb-4">Our Luxurious Rooms</h2>
+        <p class="text-slate-500 max-w-2xl mx-auto">Choose from our carefully designed rooms, each offering a unique blend of comfort and style.</p>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {% for room_type in room_types %}
+        <div class="glass-card overflow-hidden group transform transition-all duration-300 hover:shadow-2xl hover:-translate-y-2">
+            <div class="h-48 bg-gradient-to-br from-orange-100 to-orange-200 flex items-center justify-center text-6xl text-primary">
+                <i class="fa-solid fa-{{ room_type.icon|default:'bed' }}"></i>
+            </div>
+            <div class="p-6">
+                <h3 class="font-bold text-xl mb-2">{{ room_type.name }}</h3>
+                <p class="text-slate-500 text-sm mb-4">Up to {{ room_type.max_occupancy }} guests • Free Wi‑Fi • Room service</p>
+                <div class="flex items-center justify-between">
+                    <span class="text-2xl font-bold text-primary">₹{{ room_type.base_rate }}<span class="text-sm text-slate-400 font-normal">/night</span></span>
+                    <a href="{% url 'room_list_public' %}" class="bg-primary hover:bg-primaryDark text-white px-4 py-2 rounded-lg text-sm font-semibold transition">Book Now</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- ===== AMENITIES ===== -->
+<section class="bg-slate-100 py-20">
+    <div class="max-w-7xl mx-auto px-4">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl font-bold text-slate-800 mb-4">Hotel Amenities</h2>
+            <p class="text-slate-500 max-w-2xl mx-auto">Everything you need for a perfect stay.</p>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <div class="glass-card p-6 text-center hover:shadow-lg transition">
+                <i class="fa-solid fa-wifi text-primary text-3xl mb-3"></i>
+                <h3 class="font-semibold">Free Wi‑Fi</h3>
+            </div>
+            <div class="glass-card p-6 text-center hover:shadow-lg transition">
+                <i class="fa-solid fa-person-swimming text-primary text-3xl mb-3"></i>
+                <h3 class="font-semibold">Swimming Pool</h3>
+            </div>
+            <div class="glass-card p-6 text-center hover:shadow-lg transition">
+                <i class="fa-solid fa-dumbbell text-primary text-3xl mb-3"></i>
+                <h3 class="font-semibold">Fitness Center</h3>
+            </div>
+            <div class="glass-card p-6 text-center hover:shadow-lg transition">
+                <i class="fa-solid fa-spa text-primary text-3xl mb-3"></i>
+                <h3 class="font-semibold">Spa & Wellness</h3>
+            </div>
+            <div class="glass-card p-6 text-center hover:shadow-lg transition">
+                <i class="fa-solid fa-utensils text-primary text-3xl mb-3"></i>
+                <h3 class="font-semibold">Fine Dining</h3>
+            </div>
+            <div class="glass-card p-6 text-center hover:shadow-lg transition">
+                <i class="fa-solid fa-car text-primary text-3xl mb-3"></i>
+                <h3 class="font-semibold">Free Parking</h3>
+            </div>
+            <div class="glass-card p-6 text-center hover:shadow-lg transition">
+                <i class="fa-solid fa-concierge-bell text-primary text-3xl mb-3"></i>
+                <h3 class="font-semibold">24/7 Concierge</h3>
+            </div>
+            <div class="glass-card p-6 text-center hover:shadow-lg transition">
+                <i class="fa-solid fa-plane-departure text-primary text-3xl mb-3"></i>
+                <h3 class="font-semibold">Airport Shuttle</h3>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== SPECIAL OFFERS ===== -->
+<section class="py-20 max-w-7xl mx-auto px-4">
+    <div class="text-center mb-16">
+        <h2 class="text-4xl font-bold text-slate-800 mb-4">Exclusive Offers</h2>
+        <p class="text-slate-500 max-w-2xl mx-auto">Limited‑time packages tailored just for you.</p>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="glass-card overflow-hidden">
+            <div class="h-48 bg-gradient-to-br from-orange-400 to-primary flex items-center justify-center text-white text-4xl">
+                <i class="fa-solid fa-umbrella-beach"></i>
+            </div>
+            <div class="p-6">
+                <h3 class="font-bold text-xl mb-2">Summer Escape</h3>
+                <p class="text-slate-500 text-sm mb-4">Enjoy 20% off on all suites with breakfast included.</p>
+                <a href="#" class="text-primary font-semibold hover:underline">Learn More →</a>
+            </div>
+        </div>
+        <div class="glass-card overflow-hidden">
+            <div class="h-48 bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white text-4xl">
+                <i class="fa-solid fa-champagne-glasses"></i>
+            </div>
+            <div class="p-6">
+                <h3 class="font-bold text-xl mb-2">Honeymoon Bliss</h3>
+                <p class="text-slate-500 text-sm mb-4">Romantic candle‑lit dinner and spa session for two.</p>
+                <a href="#" class="text-primary font-semibold hover:underline">Learn More →</a>
+            </div>
+        </div>
+        <div class="glass-card overflow-hidden">
+            <div class="h-48 bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white text-4xl">
+                <i class="fa-solid fa-briefcase"></i>
+            </div>
+            <div class="p-6">
+                <h3 class="font-bold text-xl mb-2">Business Pro</h3>
+                <p class="text-slate-500 text-sm mb-4">Conference room included and high‑speed internet.</p>
+                <a href="#" class="text-primary font-semibold hover:underline">Learn More →</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== TESTIMONIALS ===== -->
+<section class="bg-slate-900 py-20">
+    <div class="max-w-7xl mx-auto px-4 text-center">
+        <h2 class="text-4xl font-bold text-white mb-12">What Our Guests Say</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="glass-card bg-white/10 p-6 text-white">
+                <i class="fa-solid fa-star text-amber-400 mb-2"></i><i class="fa-solid fa-star text-amber-400"></i><i class="fa-solid fa-star text-amber-400"></i><i class="fa-solid fa-star text-amber-400"></i><i class="fa-solid fa-star text-amber-400"></i>
+                <p class="my-4 italic">"The best hotel experience I've ever had. The staff was incredible!"</p>
+                <h4 class="font-semibold">– Sarah M.</h4>
+            </div>
+            <div class="glass-card bg-white/10 p-6 text-white">
+                <i class="fa-solid fa-star text-amber-400 mb-2"></i><i class="fa-solid fa-star text-amber-400"></i><i class="fa-solid fa-star text-amber-400"></i><i class="fa-solid fa-star text-amber-400"></i><i class="fa-solid fa-star text-amber-400"></i>
+                <p class="my-4 italic">"The Presidential Suite is out of this world. Pure luxury."</p>
+                <h4 class="font-semibold">– James L.</h4>
+            </div>
+            <div class="glass-card bg-white/10 p-6 text-white">
+                <i class="fa-solid fa-star text-amber-400 mb-2"></i><i class="fa-solid fa-star text-amber-400"></i><i class="fa-solid fa-star text-amber-400"></i><i class="fa-solid fa-star text-amber-400"></i><i class="fa-solid fa-star text-amber-400"></i>
+                <p class="my-4 italic">"Amazing food, beautiful views. We'll definitely come back."</p>
+                <h4 class="font-semibold">– Aiko T.</h4>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== STATISTICS ===== -->
+<section class="py-20 max-w-7xl mx-auto px-4">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+        <div class="animate-counter">
+            <span class="text-5xl font-bold text-primary">250+</span>
+            <p class="text-slate-500 mt-2">Luxury Rooms</p>
+        </div>
+        <div class="animate-counter">
+            <span class="text-5xl font-bold text-primary">15K+</span>
+            <p class="text-slate-500 mt-2">Happy Guests</p>
+        </div>
+        <div class="animate-counter">
+            <span class="text-5xl font-bold text-primary">4.9</span>
+            <p class="text-slate-500 mt-2">Average Rating</p>
+        </div>
+        <div class="animate-counter">
+            <span class="text-5xl font-bold text-primary">10</span>
+            <p class="text-slate-500 mt-2">Years of Excellence</p>
+        </div>
+    </div>
+</section>
+
+<!-- ===== NEWSLETTER ===== -->
+<section class="py-20 bg-gradient-to-r from-primary to-primaryDark">
+    <div class="max-w-3xl mx-auto px-4 text-center text-white">
+        <h2 class="text-4xl font-bold mb-4">Stay in the Loop</h2>
+        <p class="mb-8 text-white/80">Subscribe to our newsletter for exclusive deals and updates.</p>
+        <form class="flex flex-col sm:flex-row gap-4 justify-center">
+            <input type="email" placeholder="Enter your email" class="flex-1 px-4 py-3 rounded-lg text-slate-800 focus:outline-none">
+            <button class="bg-white text-primary font-bold px-6 py-3 rounded-lg hover:bg-slate-100 transition">
+                Subscribe
+            </button>
+        </form>
+    </div>
+</section>
+
+<!-- ===== FINAL CTA ===== -->
+<section class="py-20 text-center">
+    <h2 class="text-4xl font-bold text-slate-800 mb-4">Ready to Experience Grand Horizon?</h2>
+    <p class="text-slate-500 mb-8">Join our loyalty program and unlock member‑only rates.</p>
+    <a href="{% url 'register' %}" class="bg-primary hover:bg-primaryDark text-white px-10 py-4 rounded-xl text-lg font-semibold shadow-xl transition transform hover:scale-105">
+        Create Your Account
+    </a>
+</section>
+
+{% endblock %}

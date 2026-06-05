@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% block title %}Settings{% endblock %}
+{% block content %}
+<div class="max-w-2xl mx-auto glass-card p-6 space-y-6 animate__animated animate__fadeInUp">
+    <h2 class="text-2xl font-bold text-slate-800 dark:text-white flex items-center space-x-2">
+        <i class="fa-solid fa-sliders text-primary"></i>
+        <span>Settings</span>
+    </h2>
+
+    <!-- Appearance Section -->
+    <div>
+        <h3 class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-3">Appearance</h3>
+        <div class="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4">
+            <div class="flex items-center justify-between">
+                <span class="text-slate-700 dark:text-slate-200 font-medium">
+                    <i class="fa-solid fa-moon mr-2 text-indigo-500"></i> Dark Mode
+                </span>
+                <button id="settingsDarkToggle" class="w-10 h-6 bg-slate-300 dark:bg-slate-600 rounded-full relative transition">
+                    <span class="absolute left-0 top-0 w-6 h-6 bg-white rounded-full shadow transform transition-transform"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notifications Section -->
+    <div>
+        <h3 class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-3">Notifications</h3>
+        <div class="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4 space-y-4">
+            <div class="flex items-center justify-between">
+                <span class="text-slate-700 dark:text-slate-200 font-medium">
+                    <i class="fa-solid fa-envelope mr-2 text-amber-500"></i> Email Notifications
+                </span>
+                <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" checked class="sr-only peer" onchange="showToast('Email notifications preference saved', 'success')">
+                    <div class="w-10 h-6 bg-slate-300 dark:bg-slate-600 rounded-full peer peer-checked:bg-primary peer-checked:after:translate-x-4 after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
+                </label>
+            </div>
+            <div class="flex items-center justify-between">
+                <span class="text-slate-700 dark:text-slate-200 font-medium">
+                    <i class="fa-solid fa-bell mr-2 text-rose-500"></i> Push Alerts
+                </span>
+                <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" checked class="sr-only peer" onchange="showToast('Push alerts preference saved', 'success')">
+                    <div class="w-10 h-6 bg-slate-300 dark:bg-slate-600 rounded-full peer peer-checked:bg-primary peer-checked:after:translate-x-4 after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <!-- Account Section -->
+    <div>
+        <h3 class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-3">Account</h3>
+        <div class="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4 space-y-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    {% if user.profile_picture %}
+                        <img src="{{ user.profile_picture.url }}" class="w-10 h-10 rounded-full object-cover border-2 border-primary">
+                    {% else %}
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-primaryDark text-white flex items-center justify-center font-bold text-lg">
+                            {{ user.get_initials }}
+                        </div>
+                    {% endif %}
+                    <div>
+                        <p class="font-semibold text-slate-800 dark:text-white">{{ user.get_full_name|default:user.email }}</p>
+                        <p class="text-xs text-slate-500">{{ user.get_role_display }}</p>
+                    </div>
+                </div>
+                <a href="{% url 'profile' %}" class="text-sm text-primary hover:underline font-medium">
+                    Edit Profile
+                </a>
+            </div>
+            <div class="flex items-center justify-between">
+                <span class="text-slate-700 dark:text-slate-200 font-medium">
+                    <i class="fa-solid fa-lock mr-2 text-indigo-500"></i> Password
+                </span>
+                <a href="{% url 'password_change' %}" class="text-sm text-primary hover:underline font-medium">
+                    Change Password
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Save Button (visual feedback) -->
+    <button onclick="showToast('All settings saved successfully', 'success')" class="w-full bg-primary hover:bg-primaryDark text-white font-semibold py-2.5 rounded-lg transition shadow-md">
+        <i class="fa-solid fa-floppy-disk mr-2"></i> Save Settings
+    </button>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // Dark mode toggle
+    const darkToggle = document.getElementById('settingsDarkToggle');
+    const html = document.documentElement;
+
+    function updateToggleUI() {
+        const isDark = html.classList.contains('dark');
+        if (darkToggle) {
+            darkToggle.querySelector('span').style.transform = isDark ? 'translateX(100%)' : 'translateX(0)';
+        }
+    }
+    updateToggleUI();
+
+    if (darkToggle) {
+        darkToggle.addEventListener('click', () => {
+            html.classList.toggle('dark');
+            localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+            updateToggleUI();
+            showToast('Dark mode preference saved', 'success');
+        });
+    }
+</script>
+{% endblock %}

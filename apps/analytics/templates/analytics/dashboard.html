@@ -1,0 +1,383 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Reports & Analytics{% endblock %}
+{% block extra_head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+    @media print {
+        body * { visibility: hidden; }
+        #reportDocument, #reportDocument * { visibility: visible; }
+        #reportDocument { position: absolute; left: 0; top: 0; width: 100%; }
+        .no-print { display: none !important; }
+    }
+</style>
+{% endblock %}
+{% block content %}
+<div class="flex flex-col xl:flex-row gap-6">
+
+    <!-- REPORT SIDEBAR -->
+    <div class="xl:w-64 shrink-0">
+        <div class="glass-card p-4 space-y-4 sticky top-20">
+            <h3 class="text-sm font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wider">Reports</h3>
+            <nav class="space-y-1" id="reportNav">
+                <button onclick="showReport('profit_loss')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-primary/10 transition flex items-center space-x-2 active">
+                    <i class="fa-solid fa-chart-line text-emerald-500 w-4"></i> <span>Profit & Loss</span>
+                </button>
+                <button onclick="showReport('balance_sheet')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-primary/10 transition flex items-center space-x-2">
+                    <i class="fa-solid fa-scale-balanced text-blue-500 w-4"></i> <span>Balance Sheet</span>
+                </button>
+                <button onclick="showReport('cash_flow')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-primary/10 transition flex items-center space-x-2">
+                    <i class="fa-solid fa-money-bill-transfer text-amber-500 w-4"></i> <span>Cash Flow</span>
+                </button>
+                <button onclick="showReport('sales_report')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-primary/10 transition flex items-center space-x-2">
+                    <i class="fa-solid fa-basket-shopping text-purple-500 w-4"></i> <span>Sales Report</span>
+                </button>
+                <button onclick="showReport('inventory_report')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-primary/10 transition flex items-center space-x-2">
+                    <i class="fa-solid fa-boxes-stacked text-indigo-500 w-4"></i> <span>Inventory</span>
+                </button>
+                <button onclick="showReport('product_performance')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-primary/10 transition flex items-center space-x-2">
+                    <i class="fa-solid fa-fire text-rose-500 w-4"></i> <span>Product Perf.</span>
+                </button>
+                <button onclick="showReport('branch_performance')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-primary/10 transition flex items-center space-x-2">
+                    <i class="fa-solid fa-network-wired text-cyan-500 w-4"></i> <span>Branches</span>
+                </button>
+                <button onclick="showReport('expense_report')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-primary/10 transition flex items-center space-x-2">
+                    <i class="fa-solid fa-file-invoice text-pink-500 w-4"></i> <span>Expenses</span>
+                </button>
+                <button onclick="showReport('trend_analysis')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-primary/10 transition flex items-center space-x-2">
+                    <i class="fa-solid fa-arrow-trend-up text-teal-500 w-4"></i> <span>Trends</span>
+                </button>
+                <button onclick="showReport('customer_report')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-primary/10 transition flex items-center space-x-2">
+                    <i class="fa-solid fa-user-gear text-sky-500 w-4"></i> <span>Customers</span>
+                </button>
+                <button onclick="showReport('tax_report')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-primary/10 transition flex items-center space-x-2">
+                    <i class="fa-solid fa-percent text-orange-500 w-4"></i> <span>Tax / VAT</span>
+                </button>
+            </nav>
+        </div>
+    </div>
+
+    <!-- REPORT CONTENT AREA -->
+    <div class="flex-1 space-y-6" id="reportContent">
+
+        <!-- Filter & Export Bar -->
+        <div class="glass-card p-4 no-print">
+            <form method="get" class="flex flex-col sm:flex-row items-end gap-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Start Date</label>
+                    <input type="date" name="start_date" value="{{ start_date }}" class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-primary/20">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">End Date</label>
+                    <input type="date" name="end_date" value="{{ end_date }}" class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-primary/20">
+                </div>
+                <button type="submit" class="bg-primary hover:bg-primaryDark text-white px-5 py-2 rounded-lg text-sm font-semibold transition flex items-center space-x-2">
+                    <i class="fa-solid fa-filter"></i> <span>Apply Filter</span>
+                </button>
+                <button type="button" onclick="window.print()" class="bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2 rounded-lg text-sm font-semibold transition flex items-center space-x-2">
+                    <i class="fa-solid fa-download"></i> <span>Export / Print</span>
+                </button>
+            </form>
+        </div>
+
+        <!-- 1. Profit & Loss -->
+        <div id="profit_loss" class="report-section">
+            <div class="glass-card p-5 space-y-4">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-lg font-bold">Profit & Loss Statement</h2>
+                    <a href="{% url 'report_detail' %}?report=profit_loss&start_date={{ start_date }}&end_date={{ end_date }}" class="text-sm text-primary hover:underline font-medium">
+                        <i class="fa-solid fa-calculator mr-1"></i> View Details
+                    </a>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl">
+                        <p class="text-xs text-slate-500 uppercase">Gross Revenue</p>
+                        <h3 class="text-2xl font-bold text-emerald-600">₹{{ total_revenue|floatformat:0 }}</h3>
+                    </div>
+                    <div class="p-4 bg-rose-50 dark:bg-rose-900/20 rounded-xl">
+                        <p class="text-xs text-slate-500 uppercase">Total Expenses</p>
+                        <h3 class="text-2xl font-bold text-rose-600">₹{{ expenses_period|floatformat:0 }}</h3>
+                    </div>
+                    <div class="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
+                        <p class="text-xs text-slate-500 uppercase">Net Profit</p>
+                        <h3 class="text-2xl font-bold text-blue-600">₹{{ profit_period|floatformat:0 }}</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. Balance Sheet -->
+        <div id="balance_sheet" class="report-section hidden">
+            <div class="glass-card p-5 space-y-4">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-lg font-bold">Balance Sheet</h2>
+                    <a href="{% url 'report_detail' %}?report=balance_sheet&start_date={{ start_date }}&end_date={{ end_date }}" class="text-sm text-primary hover:underline font-medium">
+                        <i class="fa-solid fa-calculator mr-1"></i> View Details
+                    </a>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl">
+                        <p class="text-xs uppercase text-slate-500">Assets</p>
+                        <h3 class="text-2xl font-bold">₹{{ total_assets }}</h3>
+                    </div>
+                    <div class="p-4 bg-rose-50 dark:bg-rose-900/20 rounded-xl">
+                        <p class="text-xs uppercase text-slate-500">Liabilities</p>
+                        <h3 class="text-2xl font-bold">₹{{ total_liabilities }}</h3>
+                    </div>
+                </div>
+                <div class="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl text-center">
+                    <p class="text-xs uppercase text-slate-500">Owner's Equity</p>
+                    <h3 class="text-xl font-bold">₹{{ equity }}</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Cash Flow -->
+        <div id="cash_flow" class="report-section hidden">
+            <div class="glass-card p-5 space-y-4">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-lg font-bold">Cash Flow Statement</h2>
+                    <a href="{% url 'report_detail' %}?report=cash_flow&start_date={{ start_date }}&end_date={{ end_date }}" class="text-sm text-primary hover:underline font-medium">
+                        <i class="fa-solid fa-calculator mr-1"></i> View Details
+                    </a>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl">
+                        <p class="text-xs uppercase text-slate-500">Money In</p>
+                        <h3 class="text-2xl font-bold text-emerald-600">₹{{ cash_in|floatformat:0 }}</h3>
+                    </div>
+                    <div class="p-4 bg-rose-50 dark:bg-rose-900/20 rounded-xl">
+                        <p class="text-xs uppercase text-slate-500">Money Out</p>
+                        <h3 class="text-2xl font-bold text-rose-600">₹{{ cash_out|floatformat:0 }}</h3>
+                    </div>
+                </div>
+                <div class="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl text-center">
+                    <p class="text-xs uppercase text-slate-500">Net Cash Flow</p>
+                    <h3 class="text-xl font-bold">₹{{ net_cash_flow|floatformat:0 }}</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. Sales Report -->
+        <div id="sales_report" class="report-section hidden">
+            <div class="glass-card p-5 space-y-4">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-lg font-bold">Sales Report</h2>
+                    <a href="{% url 'report_detail' %}?report=sales&start_date={{ start_date }}&end_date={{ end_date }}" class="text-sm text-primary hover:underline font-medium">
+                        <i class="fa-solid fa-calculator mr-1"></i> View Details
+                    </a>
+                </div>
+                <table class="w-full text-sm">
+                    <thead><tr class="border-b"><th class="pb-2 text-left">Source</th><th class="pb-2 text-right">Amount</th></tr></thead>
+                    <tbody>
+                        <tr><td class="py-2">Room Bookings</td><td class="py-2 text-right font-semibold">₹{{ room_sales|floatformat:0 }}</td></tr>
+                        <tr><td class="py-2">Restaurant & Dining</td><td class="py-2 text-right font-semibold">₹{{ restaurant_sales|floatformat:0 }}</td></tr>
+                        <tr><td class="py-2">Other Income</td><td class="py-2 text-right font-semibold">₹{{ other_income|floatformat:0 }}</td></tr>
+                        <tr class="font-bold"><td class="py-2">Total Sales</td><td class="py-2 text-right">₹{{ total_sales|floatformat:0 }}</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 5. Inventory Report -->
+        <div id="inventory_report" class="report-section hidden">
+            <div class="glass-card p-5 space-y-4">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-lg font-bold">Inventory Status</h2>
+                    <a href="{% url 'report_detail' %}?report=inventory&start_date={{ start_date }}&end_date={{ end_date }}" class="text-sm text-primary hover:underline font-medium">
+                        <i class="fa-solid fa-calculator mr-1"></i> View Details
+                    </a>
+                </div>
+                {% if low_stock_items %}
+                <div class="bg-amber-50 border border-amber-200 text-amber-800 p-3 rounded-lg text-sm">
+                    <i class="fa-solid fa-triangle-exclamation mr-1"></i> Low stock: 
+                    {% for item in low_stock_items %}<strong>{{ item.name }}</strong>{% if not forloop.last %}, {% endif %}{% endfor %}
+                </div>
+                <ul class="space-y-2">
+                    {% for item in low_stock_items %}
+                    <li class="flex justify-between text-sm"><span>{{ item.name }}</span><span class="text-rose-600 font-semibold">{{ item.quantity }} {{ item.unit }}</span></li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="text-sm text-slate-500">All items are sufficiently stocked.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- 6. Product Performance -->
+        <div id="product_performance" class="report-section hidden">
+            <div class="glass-card p-5 space-y-4">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-lg font-bold">Product Performance</h2>
+                    <a href="{% url 'report_detail' %}?report=product_performance&start_date={{ start_date }}&end_date={{ end_date }}" class="text-sm text-primary hover:underline font-medium">
+                        <i class="fa-solid fa-calculator mr-1"></i> View Details
+                    </a>
+                </div>
+                <ul class="space-y-2">
+                    {% for prod in product_performance %}
+                    <li class="flex items-center justify-between text-sm">
+                        <span class="font-medium">{{ prod.name }}</span>
+                        <span class="text-slate-500">{{ prod.sales }} sold</span>
+                        <span class="font-bold text-emerald-600">₹{{ prod.revenue }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+
+        <!-- 7. Branch Performance -->
+        <div id="branch_performance" class="report-section hidden">
+            <div class="glass-card p-5 space-y-4">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-lg font-bold">Branch Performance</h2>
+                    <a href="{% url 'report_detail' %}?report=branches&start_date={{ start_date }}&end_date={{ end_date }}" class="text-sm text-primary hover:underline font-medium">
+                        <i class="fa-solid fa-calculator mr-1"></i> View Details
+                    </a>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {% for branch in branches %}
+                    <div class="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl">
+                        <h3 class="font-bold">{{ branch.name }}</h3>
+                        <p class="text-sm text-slate-500">Revenue: ₹{{ branch.revenue|floatformat:0 }}</p>
+                    </div>
+                    {% empty %}
+                    <p class="text-sm text-slate-500">No branches configured.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- 8. Expense Report -->
+        <div id="expense_report" class="report-section hidden">
+            <div class="glass-card p-5 space-y-4">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-lg font-bold">Expense Breakdown</h2>
+                    <a href="{% url 'report_detail' %}?report=expenses&start_date={{ start_date }}&end_date={{ end_date }}" class="text-sm text-primary hover:underline font-medium">
+                        <i class="fa-solid fa-calculator mr-1"></i> View Details
+                    </a>
+                </div>
+                <table class="w-full text-sm">
+                    <thead><tr class="border-b"><th class="pb-2 text-left">Category</th><th class="pb-2 text-right">Amount</th></tr></thead>
+                    <tbody>
+                        {% for exp in expenses_by_category %}
+                        <tr><td class="py-2">{{ exp.category|default:"General" }}</td><td class="py-2 text-right font-semibold">₹{{ exp.total|floatformat:0 }}</td></tr>
+                        {% empty %}
+                        <tr><td colspan="2" class="py-2 text-slate-500">No expenses recorded.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 9. Trend Analysis -->
+        <div id="trend_analysis" class="report-section hidden">
+            <div class="glass-card p-5 space-y-4">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-lg font-bold">Sales & Expense Trends (6 months)</h2>
+                    <a href="{% url 'report_detail' %}?report=trends&start_date={{ start_date }}&end_date={{ end_date }}" class="text-sm text-primary hover:underline font-medium">
+                        <i class="fa-solid fa-calculator mr-1"></i> View Details
+                    </a>
+                </div>
+                <canvas id="trendChart" height="80"></canvas>
+            </div>
+        </div>
+
+        <!-- 10. Customer Report -->
+        <div id="customer_report" class="report-section hidden">
+            <div class="glass-card p-5 space-y-4">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-lg font-bold">Top Guests</h2>
+                    <a href="{% url 'report_detail' %}?report=customers&start_date={{ start_date }}&end_date={{ end_date }}" class="text-sm text-primary hover:underline font-medium">
+                        <i class="fa-solid fa-calculator mr-1"></i> View Details
+                    </a>
+                </div>
+                <ul class="space-y-2">
+                    {% for guest in top_guests %}
+                    <li class="flex justify-between items-center p-2 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
+                        <span>{{ guest.guest__first_name }} {{ guest.guest__last_name }} ({{ guest.guest__email }})</span>
+                        <span class="font-bold text-emerald-600">₹{{ guest.total_spent|floatformat:0 }}</span>
+                    </li>
+                    {% empty %}
+                    <li class="text-sm text-slate-500">No guest data available for this period.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+
+        <!-- 11. Tax Report -->
+        <div id="tax_report" class="report-section hidden">
+            <div class="glass-card p-5 space-y-4">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-lg font-bold">Tax Summary</h2>
+                    <a href="{% url 'report_detail' %}?report=tax&start_date={{ start_date }}&end_date={{ end_date }}" class="text-sm text-primary hover:underline font-medium">
+                        <i class="fa-solid fa-calculator mr-1"></i> View Details
+                    </a>
+                </div>
+                <div class="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl text-center">
+                    <p class="text-xs uppercase text-slate-500">Total Tax / VAT Collected</p>
+                    <h3 class="text-2xl font-bold text-blue-600">₹{{ tax_collected|floatformat:0 }}</h3>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+{{ trend_labels|json_script:"trendLabels" }}
+{{ trend_revenue|json_script:"trendRevenue" }}
+{{ trend_expenses|json_script:"trendExpenses" }}
+
+<script>
+    function showReport(reportId) {
+        document.querySelectorAll('.report-section').forEach(s => s.classList.add('hidden'));
+        const active = document.getElementById(reportId);
+        if (active) active.classList.remove('hidden');
+        document.querySelectorAll('#reportNav button').forEach(b => {
+            b.classList.remove('bg-primary/10', 'font-bold', 'text-primary');
+            b.classList.add('text-slate-600', 'dark:text-slate-300');
+        });
+        const btn = document.querySelector(`#reportNav button[onclick="showReport('${reportId}')"]`);
+        if (btn) {
+            btn.classList.add('bg-primary/10', 'font-bold', 'text-primary');
+            btn.classList.remove('text-slate-600', 'dark:text-slate-300');
+        }
+    }
+    showReport('profit_loss');
+
+    // Trend chart
+    const trendLabels = JSON.parse(document.getElementById('trendLabels').textContent);
+    const trendRevenue = JSON.parse(document.getElementById('trendRevenue').textContent);
+    const trendExpenses = JSON.parse(document.getElementById('trendExpenses').textContent);
+
+    const ctx = document.getElementById('trendChart')?.getContext('2d');
+    if (ctx) {
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: trendLabels,
+                datasets: [
+                    {
+                        label: 'Revenue (₹)',
+                        data: trendRevenue,
+                        borderColor: '#f97316',
+                        backgroundColor: 'rgba(249,115,22,0.1)',
+                        tension: 0.3,
+                        fill: true
+                    },
+                    {
+                        label: 'Expenses (₹)',
+                        data: trendExpenses,
+                        borderColor: '#ef4444',
+                        backgroundColor: 'rgba(239,68,68,0.1)',
+                        tension: 0.3,
+                        fill: true
+                    }
+                ]
+            },
+            options: { responsive: true, plugins: { legend: { position: 'bottom' } }, scales: { y: { beginAtZero: false } } }
+        });
+    }
+</script>
+{% endblock %}

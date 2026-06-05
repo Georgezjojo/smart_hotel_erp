@@ -1,0 +1,247 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Dashboard{% endblock %}
+{% block extra_head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+{% block content %}
+
+<!-- ====== CLICKABLE SUMMARY CARDS ====== -->
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+    <a href="{% url 'reservation_list' %}?status=checked_in&date=today" class="glass-card p-4 flex items-center space-x-4 hover:shadow-lg transform hover:-translate-y-1 transition-all duration-300 cursor-pointer">
+        <div class="p-3 bg-orange-50 text-primary rounded-xl"><i class="fa-solid fa-right-to-bracket text-xl"></i></div>
+        <div>
+            <p class="text-xs text-slate-400 uppercase">Today's Check-ins</p>
+            <h3 class="text-2xl font-bold" id="checkinsCount">{{ checkins }}</h3>
+        </div>
+    </a>
+    <a href="{% url 'reservation_list' %}?status=checked_out&date=today" class="glass-card p-4 flex items-center space-x-4 hover:shadow-lg transform hover:-translate-y-1 transition-all duration-300 cursor-pointer">
+        <div class="p-3 bg-amber-50 text-amber-600 rounded-xl"><i class="fa-solid fa-right-from-bracket text-xl"></i></div>
+        <div>
+            <p class="text-xs text-slate-400 uppercase">Today's Check-outs</p>
+            <h3 class="text-2xl font-bold" id="checkoutsCount">{{ checkouts }}</h3>
+        </div>
+    </a>
+    <a href="{% url 'room_list' %}" class="glass-card p-4 flex items-center space-x-4 hover:shadow-lg transform hover:-translate-y-1 transition-all duration-300 cursor-pointer">
+        <div class="p-3 bg-blue-50 text-blue-600 rounded-xl"><i class="fa-solid fa-percent text-xl"></i></div>
+        <div>
+            <p class="text-xs text-slate-400 uppercase">Occupancy Rate</p>
+            <h3 class="text-2xl font-bold" id="occupancyRate">{{ occupancy }}%</h3>
+        </div>
+    </a>
+    <a href="{% url 'profit_loss' %}" class="glass-card p-4 flex items-center space-x-4 hover:shadow-lg transform hover:-translate-y-1 transition-all duration-300 cursor-pointer">
+        <div class="p-3 bg-indigo-50 text-indigo-600 rounded-xl"><i class="fa-solid fa-indian-rupee-sign text-xl"></i></div>
+        <div>
+            <p class="text-xs text-slate-400 uppercase">Revenue (Month)</p>
+            <h3 class="text-2xl font-bold" id="revenueMonth">₹{{ revenue }}</h3>
+        </div>
+    </a>
+</div>
+
+<!-- ====== TODAY'S SPECIALS + QUICK ACTIONS ====== -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <!-- Specials -->
+    <div class="glass-card p-4 md:col-span-2 bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-900/20 dark:to-amber-900/20">
+        <h3 class="font-bold text-slate-800 dark:text-white flex items-center space-x-2 mb-3">
+            <i class="fa-solid fa-star text-amber-500"></i>
+            <span>Today's Specials</span>
+        </h3>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            {% for item in specials %}
+            <a href="{% url 'restaurant_menu' %}" class="block bg-white/60 dark:bg-slate-800/60 rounded-xl p-3 hover:shadow-md transition transform hover:-translate-y-1">
+                {% if item.image %}
+                    <img src="{{ item.image.url }}" class="w-full h-24 object-cover rounded-lg mb-2">
+                {% else %}
+                    <div class="w-full h-24 bg-slate-100 dark:bg-slate-700 rounded-lg flex items-center justify-center text-slate-400 mb-2">
+                        <i class="fa-solid fa-utensils text-2xl"></i>
+                    </div>
+                {% endif %}
+                <p class="font-semibold text-sm">{{ item.name }}</p>
+                <p class="text-xs text-primary font-bold">₹{{ item.price }}</p>
+            </a>
+            {% empty %}
+            <p class="text-sm text-slate-500 col-span-full">No specials today. Check our full menu.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="glass-card p-4 flex flex-col space-y-2">
+        <h3 class="font-bold text-slate-800 dark:text-white flex items-center space-x-2 mb-1">
+            <i class="fa-solid fa-bolt text-primary"></i> <span>Quick Actions</span>
+        </h3>
+        <button onclick="document.getElementById('openAddBookingModal').click()" class="bg-primary hover:bg-primaryDark text-white text-sm px-4 py-2 rounded-lg transition flex items-center space-x-2 w-full">
+            <i class="fa-solid fa-plus"></i> <span>Add Booking</span>
+        </button>
+        <a href="{% url 'restaurant_menu' %}" class="bg-amber-500 hover:bg-amber-600 text-white text-sm px-4 py-2 rounded-lg transition flex items-center space-x-2 w-full">
+            <i class="fa-solid fa-utensils"></i> <span>View Menu</span>
+        </a>
+        <a href="{% url 'inventory_list' %}" class="bg-indigo-500 hover:bg-indigo-600 text-white text-sm px-4 py-2 rounded-lg transition flex items-center space-x-2 w-full">
+            <i class="fa-solid fa-boxes-stacked"></i> <span>Inventory</span>
+        </a>
+    </div>
+</div>
+
+<!-- ====== LIVE ROOM STATUS WITH FILTER BUTTONS ====== -->
+<div class="glass-card overflow-hidden">
+    <div class="p-4 border-b border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-slate-50/50 dark:bg-slate-800/50">
+        <h2 class="font-bold text-slate-800 dark:text-white">Live Room Status</h2>
+        <div class="flex items-center space-x-1 border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-lg p-1 text-xs">
+            <button onclick="filterRooms('all')" class="filter-btn px-3 py-1 rounded-md font-semibold transition bg-primary text-white">All</button>
+            <button onclick="filterRooms('occupied')" class="filter-btn px-3 py-1 rounded-md font-semibold transition text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700">Occupied</button>
+            <button onclick="filterRooms('available')" class="filter-btn px-3 py-1 rounded-md font-semibold transition text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700">Available</button>
+            <button onclick="filterRooms('maintenance')" class="filter-btn px-3 py-1 rounded-md font-semibold transition text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700">Maintenance</button>
+        </div>
+    </div>
+    <div class="p-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3" id="roomGrid">
+        {% for item in room_timeline %}
+        <div class="room-card rounded-xl p-3 text-center text-xs border transition-all duration-200
+            {% if item.current_guest %} bg-blue-50 border-blue-300 text-blue-800 dark:bg-blue-900/20 dark:border-blue-700 dark:text-blue-300
+            {% elif item.room.status == 'maintenance' %} bg-slate-50 border-slate-300 text-slate-500 dark:bg-slate-800 dark:border-slate-600 dark:text-slate-400
+            {% else %} bg-emerald-50 border-emerald-300 text-emerald-800 dark:bg-emerald-900/20 dark:border-emerald-700 dark:text-emerald-300{% endif %}"
+            data-status="{% if item.current_guest %}occupied{% elif item.room.status == 'maintenance' %}maintenance{% else %}available{% endif %}">
+            <span class="block font-bold text-sm">{{ item.room.room_number }}</span>
+            <span class="block text-[10px] opacity-75">{{ item.room.room_type.name }}</span>
+            {% if item.current_guest %}
+                <span class="block mt-1 text-[10px] font-medium truncate">{{ item.current_guest }}</span>
+            {% else %}
+                <span class="block mt-1 text-[10px] font-medium">{{ item.room.get_status_display }}</span>
+            {% endif %}
+        </div>
+        {% empty %}
+        <p class="col-span-full text-center text-slate-500">No rooms data available.</p>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- ====== ACTIVE & UPCOMING (COMPACT) + OPERATIONAL COST (CLICKABLE) ====== -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+    <!-- Active Reservations (COMPACT) -->
+    <div class="glass-card p-4">
+        <div class="flex justify-between items-center mb-2">
+            <h3 class="font-bold text-slate-800 dark:text-white flex items-center space-x-2">
+                <i class="fa-solid fa-calendar-check text-primary"></i>
+                <span>Active & Upcoming</span>
+            </h3>
+            {% if active_reservations|length > 3 %}
+                <a href="{% url 'reservation_list' %}" class="text-xs text-primary hover:underline">View All →</a>
+            {% endif %}
+        </div>
+        {% if active_reservations %}
+        <div class="space-y-1.5">
+            {% for res in active_reservations|slice:":3" %}
+            <div class="flex items-center justify-between text-xs bg-slate-50 dark:bg-slate-800/50 p-2 rounded-lg">
+                <div>
+                    <p class="font-medium">{{ res.guest.get_full_name }}</p>
+                    <p class="text-slate-500">Room {{ res.room.room_number }} · {{ res.check_in|date:"M d" }} → {{ res.check_out|date:"M d" }}</p>
+                </div>
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold
+                    {% if res.status == 'checked_in' %}bg-blue-100 text-blue-800
+                    {% elif res.status == 'confirmed' %}bg-orange-100 text-orange-800
+                    {% else %}bg-slate-100 text-slate-600{% endif %}">
+                    {{ res.get_status_display }}
+                </span>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-sm text-slate-500">No active reservations.</p>
+        {% endif %}
+    </div>
+
+    <!-- Operational Cost (compact, clickable) -->
+    <a href="{% url 'profit_loss' %}" class="glass-card p-4 flex flex-col justify-between hover:shadow-lg transform hover:-translate-y-1 transition-all duration-300 cursor-pointer">
+        <h3 class="font-bold text-slate-800 dark:text-white flex items-center space-x-2 mb-2">
+            <i class="fa-solid fa-chart-pie text-primary"></i>
+            <span>Operational Cost</span>
+        </h3>
+        <div class="space-y-1.5 text-xs">
+            <div class="flex justify-between"><span>Salaries</span><span class="font-bold">₹15,000 (50%)</span></div>
+            <div class="w-full bg-slate-100 dark:bg-slate-700 h-1.5 rounded-full"><div class="bg-primary h-full rounded-full" style="width:50%"></div></div>
+            <div class="flex justify-between"><span>Utilities</span><span class="font-bold">₹5,000 (16.6%)</span></div>
+            <div class="w-full bg-slate-100 dark:bg-slate-700 h-1.5 rounded-full"><div class="bg-amber-500 h-full rounded-full" style="width:16.6%"></div></div>
+            <div class="flex justify-between"><span>Maintenance</span><span class="font-bold">₹4,000 (13.3%)</span></div>
+            <div class="w-full bg-slate-100 dark:bg-slate-700 h-1.5 rounded-full"><div class="bg-blue-500 h-full rounded-full" style="width:13.3%"></div></div>
+        </div>
+    </a>
+</div>
+
+<!-- ====== RECENT BOOKINGS & HOUSEKEEPING (INTERACTIVE) ====== -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+    <!-- Recent Bookings -->
+    <div class="glass-card p-4">
+        <h3 class="font-bold text-slate-800 dark:text-white flex items-center space-x-2 mb-2">
+            <i class="fa-solid fa-clock-rotate-left text-primary"></i>
+            <span>Recent Bookings</span>
+        </h3>
+        <ul class="space-y-1 text-xs">
+            {% for res in recent_reservations|slice:":5" %}
+            <li class="flex justify-between items-center p-1.5 rounded hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                <span class="font-medium">{{ res.guest.get_full_name }}</span>
+                <span class="text-slate-500">Room {{ res.room.room_number }} · {{ res.created_at|date:"M d, H:i" }}</span>
+            </li>
+            {% empty %}
+            <li class="text-slate-500">No recent bookings.</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- Housekeeping with interactive filter buttons -->
+    <div class="glass-card p-4">
+        <div class="flex justify-between items-center mb-2">
+            <h3 class="font-bold text-slate-800 dark:text-white">Housekeeping</h3>
+            <div class="flex space-x-2 text-[10px] font-semibold">
+                <button onclick="filterHousekeeping('available')" class="px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded hover:bg-emerald-200 transition">Clean ({{ clean_count }})</button>
+                <button onclick="filterHousekeeping('dirty')" class="px-2 py-0.5 bg-rose-100 text-rose-800 rounded hover:bg-rose-200 transition">Dirty ({{ dirty_count }})</button>
+            </div>
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs" id="housekeepingGrid">
+            {% for item in room_timeline %}
+            <div class="housekeeping-card p-2 bg-white dark:bg-slate-800 border rounded-lg text-center {% if item.room.status == 'available' %}border-emerald-300{% else %}border-rose-300{% endif %}" data-room-status="{{ item.room.status }}">
+                <span class="block font-bold">{{ item.room.room_number }}</span>
+                <span class="text-[10px]">{{ item.room.get_status_display }}</span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // Filter rooms by status (All / Occupied / Available / Maintenance)
+    function filterRooms(status) {
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.classList.remove('bg-primary', 'text-white');
+            btn.classList.add('text-slate-600', 'dark:text-slate-300');
+        });
+        // Find the clicked button and set active class
+        const activeBtn = document.querySelector(`.filter-btn[onclick="filterRooms('${status}')"]`);
+        if (activeBtn) {
+            activeBtn.classList.add('bg-primary', 'text-white');
+            activeBtn.classList.remove('text-slate-600', 'dark:text-slate-300');
+        }
+        document.querySelectorAll('.room-card').forEach(card => {
+            if (status === 'all' || card.dataset.status === status) {
+                card.style.display = '';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+
+    // Filter housekeeping cards (Clean / Dirty)
+    function filterHousekeeping(status) {
+        document.querySelectorAll('.housekeeping-card').forEach(card => {
+            if (status === 'available' && card.dataset.roomStatus === 'available') {
+                card.style.display = '';
+            } else if (status === 'dirty' && (card.dataset.roomStatus === 'cleaning' || card.dataset.roomStatus === 'maintenance')) {
+                card.style.display = '';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+</script>
+{% endblock %}

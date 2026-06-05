@@ -1,0 +1,175 @@
+{% extends 'base.html' %}
+{% block title %}Room Management{% endblock %}
+{% block content %}
+
+<!-- Room Summary Bar -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+    <div class="glass-card p-3 flex items-center space-x-3">
+        <div class="p-2 bg-slate-100 dark:bg-slate-800 rounded-lg text-slate-500">
+            <i class="fa-solid fa-door-open"></i>
+        </div>
+        <div>
+            <p class="text-[10px] text-slate-400 uppercase">Total Rooms</p>
+            <p class="font-bold text-lg">{{ rooms|length }}</p>
+        </div>
+    </div>
+    <div class="glass-card p-3 flex items-center space-x-3">
+        <div class="p-2 bg-emerald-100 text-emerald-600 rounded-lg">
+            <i class="fa-solid fa-check-circle"></i>
+        </div>
+        <div>
+            <p class="text-[10px] text-slate-400 uppercase">Available</p>
+            <p class="font-bold text-lg" id="availableCount">0</p>
+        </div>
+    </div>
+    <div class="glass-card p-3 flex items-center space-x-3">
+        <div class="p-2 bg-blue-100 text-blue-600 rounded-lg">
+            <i class="fa-solid fa-bed"></i>
+        </div>
+        <div>
+            <p class="text-[10px] text-slate-400 uppercase">Occupied</p>
+            <p class="font-bold text-lg" id="occupiedCount">0</p>
+        </div>
+    </div>
+    <div class="glass-card p-3 flex items-center space-x-3">
+        <div class="p-2 bg-rose-100 text-rose-600 rounded-lg">
+            <i class="fa-solid fa-broom"></i>
+        </div>
+        <div>
+            <p class="text-[10px] text-slate-400 uppercase">Cleaning / Maint.</p>
+            <p class="font-bold text-lg" id="maintenanceCount">0</p>
+        </div>
+    </div>
+</div>
+
+<!-- Filter Bar -->
+<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+    <h2 class="text-2xl font-bold text-slate-800 dark:text-white">All Rooms</h2>
+    <div class="relative">
+        <select id="roomFilter" class="appearance-none bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition">
+            <option value="all">All Rooms</option>
+            <option value="available">Available</option>
+            <option value="occupied">Occupied</option>
+            <option value="cleaning">Cleaning</option>
+            <option value="maintenance">Maintenance</option>
+        </select>
+        <i class="fa-solid fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
+    </div>
+</div>
+
+<!-- Room Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4" id="roomGrid">
+    {% for room in rooms %}
+    <div class="room-card glass-card overflow-hidden group transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer"
+         data-status="{{ room.status }}">
+        
+        <!-- Room Image / Placeholder -->
+        <div class="h-40 bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-700 dark:to-slate-600 flex items-center justify-center relative">
+            {% if room.image %}
+                <img src="{{ room.image.url }}" class="w-full h-full object-cover">
+            {% else %}
+                <i class="fa-solid fa-bed text-5xl text-slate-300 dark:text-slate-500"></i>
+            {% endif %}
+            <!-- Status Badge -->
+            <span class="absolute top-2 right-2 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase
+                {% if room.status == 'available' %} bg-emerald-100 text-emerald-700 border border-emerald-200
+                {% elif room.status == 'occupied' %} bg-blue-100 text-blue-700 border border-blue-200
+                {% elif room.status == 'cleaning' %} bg-amber-100 text-amber-700 border border-amber-200
+                {% else %} bg-rose-100 text-rose-700 border border-rose-200 {% endif %}">
+                {{ room.get_status_display }}
+            </span>
+        </div>
+
+        <!-- Room Info -->
+        <div class="p-4">
+            <h3 class="font-bold text-slate-800 dark:text-white text-lg">{{ room.room_number }}</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400">{{ room.room_type.name }}</p>
+            <div class="flex items-center justify-between mt-3">
+                <span class="text-sm font-semibold text-primary">₹{{ room.room_type.base_rate }}/night</span>
+                <span class="text-[10px] text-slate-400">Floor {{ room.floor }}</span>
+            </div>
+            <!-- Quick Actions -->
+            <div class="mt-3 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                <a href="{% url 'add_booking' %}?room={{ room.room_number }}" class="flex-1 bg-primary hover:bg-primaryDark text-white text-xs px-2 py-1.5 rounded text-center transition">
+                    Book Now
+                </a>
+                <button class="flex-1 bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs px-2 py-1.5 rounded hover:bg-slate-300 transition">
+                    Details
+                </button>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-span-full text-center py-12 text-slate-500">
+        <i class="fa-solid fa-bed text-4xl mb-3 opacity-50"></i>
+        <p>No rooms found.</p>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const filterSelect = document.getElementById('roomFilter');
+        const cards = document.querySelectorAll('.room-card');
+
+        // Count initial numbers
+        updateCounts();
+
+        filterSelect.addEventListener('change', function() {
+            const value = this.value;
+            cards.forEach(card => {
+                if (value === 'all' || card.dataset.status === value) {
+                    card.style.display = '';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            // Update counts based on visible cards
+            updateCounts();
+        });
+
+        function updateCounts() {
+            let available = 0, occupied = 0, maintenance = 0;
+            cards.forEach(card => {
+                if (card.style.display === 'none') return;
+                const status = card.dataset.status;
+                if (status === 'available') available++;
+                else if (status === 'occupied') occupied++;
+                else if (status === 'cleaning' || status === 'maintenance') maintenance++;
+            });
+            document.getElementById('availableCount').textContent = available;
+            document.getElementById('occupiedCount').textContent = occupied;
+            document.getElementById('maintenanceCount').textContent = maintenance;
+        }
+    });
+</script>
+{% endblock %}
+
+<div class="p-4">
+    <h3 class="font-bold text-slate-800 dark:text-white text-lg">{{ room.room_number }}</h3>
+    <p class="text-xs text-slate-500 dark:text-slate-400">{{ room.room_type.name }}</p>
+    <div class="flex items-center justify-between mt-3">
+        <span class="text-sm font-semibold text-primary">₹{{ room.room_type.base_rate }}/night</span>
+        <span class="text-[10px] text-slate-400">Floor {{ room.floor }}</span>
+    </div>
+    <!-- Always visible buttons -->
+    <div class="mt-3 flex space-x-2">
+        <a href="{% url 'add_booking' %}?room={{ room.room_number }}" class="flex-1 bg-primary hover:bg-primaryDark text-white text-xs px-2 py-1.5 rounded text-center transition">
+            Book Now
+        </a>
+        <a href="{% url 'room_detail' room.room_number %}" class="flex-1 bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs px-2 py-1.5 rounded hover:bg-slate-300 transition text-center">
+            Details
+        </a>
+    </div>
+</div>
+<div class="flex justify-between items-center mb-4">
+    <h2 class="text-2xl font-bold text-slate-800 dark:text-white">Room Management</h2>
+    {% if user.role in 'super_admin,owner,manager' %}
+    <a href="{% url 'room_create' %}" class="bg-primary hover:bg-primaryDark text-white px-4 py-2 rounded-lg text-sm font-semibold transition flex items-center space-x-2">
+        <i class="fa-solid fa-plus"></i> <span>Add Room</span>
+    </a>
+    {% endif %}
+</div>

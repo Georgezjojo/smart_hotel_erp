@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block title %}Branches{% endblock %}
+{% block content %}
+<h2 class="text-2xl font-bold mb-4">Hotel Branches</h2>
+<a href="#" class="bg-primary text-white px-4 py-2 rounded-lg mb-4 inline-block text-sm">Add Branch</a>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    {% for branch in branches %}
+    <div class="glass-card p-4">
+        <h3 class="font-bold text-lg">{{ branch.name }}</h3>
+        <p class="text-xs text-slate-500">{{ branch.address }}</p>
+        <p class="text-xs text-slate-400">{{ branch.phone }}</p>
+        <span class="text-xs {% if branch.is_active %}text-emerald-600{% else %}text-rose-600{% endif %}">
+            {{ branch.is_active|yesno:"Active,Inactive" }}
+        </span>
+    </div>
+    {% empty %}
+    <p class="col-span-full text-slate-500">No branches yet.</p>
+    {% endfor %}
+</div>
+{% endblock %}

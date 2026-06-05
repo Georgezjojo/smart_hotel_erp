@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block title %}Guest Profile{% endblock %}
+{% block content %}
+<!-- Back button -->
+<a href="{% url 'guest_list' %}" class="text-slate-500 hover:text-primary inline-block mb-4">
+    <i class="fa-solid fa-arrow-left mr-1"></i> Back to Guest List
+</a>
+
+<h2 class="text-2xl font-bold">{{ guest.user.get_full_name }}</h2>
+<div class="glass-card p-6 mt-4">
+    <p><strong>Email:</strong> {{ guest.user.email }}</p>
+    <p><strong>Nationality:</strong> {{ guest.nationality }}</p>
+    <p><strong>Passport:</strong> {{ guest.passport_number }}</p>
+    <p><strong>Tier:</strong> {{ guest.tier }}</p>
+    <p><strong>Loyalty Points:</strong> {{ guest.loyalty_points }}</p>
+</div>
+{% endblock %}

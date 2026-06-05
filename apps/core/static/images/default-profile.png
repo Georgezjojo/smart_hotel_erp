@@ -1,0 +1,5 @@
+import base64
+# 1x1 transparent PNG base64
+png = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=='
+with open('default-profile.png', 'wb') as f:
+    f.write(base64.b64decode(png))

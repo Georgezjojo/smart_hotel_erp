@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block title %}Modify Reservation{% endblock %}
+{% block content %}
+<h2 class="text-2xl font-bold mb-4">Modify Reservation #{{ reservation.id }}</h2>
+<form method="post" class="glass-card p-6">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="bg-primary text-white px-6 py-2 rounded">Update</button>
+</form>
+{% endblock %}

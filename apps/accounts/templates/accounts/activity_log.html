@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block title %}Activity Log{% endblock %}
+{% block content %}
+<div class="glass-card p-6">
+    <h2 class="text-2xl font-bold mb-4">Activity Log</h2>
+    <p class="text-slate-500">Recent user actions will appear here.</p>
+    <!-- In production, list recent login attempts, changes, etc. -->
+    <div class="mt-4 text-sm text-slate-400">
+        <p>No activity recorded yet.</p>
+    </div>
+</div>
+{% endblock %}

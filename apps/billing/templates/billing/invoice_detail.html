@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% block title %}Invoice {{ invoice.invoice_number }}{% endblock %}
+{% block content %}
+<div class="max-w-2xl mx-auto glass-card overflow-hidden">
+    <!-- Back button -->
+    <a href="{% url 'invoice_list' %}" class="text-slate-500 hover:text-primary inline-block mb-4">
+        <i class="fa-solid fa-arrow-left mr-1"></i> Back to Invoices
+    </a>
+
+    <div class="p-6 bg-slate-900 text-white flex justify-between items-center">
+        <div>
+            <p class="text-[10px] uppercase tracking-widest text-slate-400 font-semibold">Folio / Invoice Registry</p>
+            <h3 class="text-xl font-bold tracking-tight mt-0.5">{{ invoice.invoice_number }}</h3>
+        </div>
+        <div class="text-right">
+            {% if invoice.paid %}
+                <span class="bg-emerald-500/20 text-emerald-400 text-xs font-bold px-3 py-1 rounded-full border border-emerald-500/30">
+                    <i class="fa-solid fa-circle-check mr-1 text-[10px]"></i> Fully Settled
+                </span>
+            {% else %}
+                <span class="bg-amber-500/20 text-amber-400 text-xs font-bold px-3 py-1 rounded-full border border-amber-500/30">
+                    <i class="fa-solid fa-clock mr-1 text-[10px]"></i> Pending
+                </span>
+            {% endif %}
+        </div>
+    </div>
+    <div class="p-6 space-y-6">
+        <div class="grid grid-cols-2 gap-4 text-xs border-b border-slate-100 pb-4">
+            <div>
+                <span class="block text-slate-400 font-medium">Guest</span>
+                <span class="block font-bold text-slate-800 mt-0.5">{{ invoice.reservation.guest.get_full_name }}</span>
+            </div>
+            <div class="text-right">
+                <span class="block text-slate-400 font-medium">Settlement Date</span>
+                <span class="block font-bold text-slate-800 mt-0.5">{{ invoice.issue_date|date:"M d, Y" }}</span>
+            </div>
+        </div>
+        <table class="w-full text-left text-xs">
+            <thead>
+                <tr class="text-slate-400 uppercase tracking-wider border-b border-slate-100 font-semibold">
+                    <th class="pb-2">Description</th>
+                    <th class="pb-2 text-center">Qty/Nights</th>
+                    <th class="pb-2 text-right">Unit Price</th>
+                    <th class="pb-2 text-right">Total</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 text-slate-700">
+                <tr>
+                    <td class="py-3 font-medium">Accommodation - Room {{ invoice.reservation.room.room_number }}</td>
+                    <td class="py-3 text-center">{{ invoice.reservation.check_out|timeuntil:invoice.reservation.check_in }}</td>
+                    <td class="py-3 text-right">₹{{ invoice.reservation.room.room_type.base_rate }}</td>
+                    <td class="py-3 text-right font-semibold">₹{{ invoice.subtotal }}</td>
+                </tr>
+                <tr>
+                    <td class="py-3 font-medium">Luxury Tax (12%)</td>
+                    <td class="py-3 text-center">-</td>
+                    <td class="py-3 text-right">-</td>
+                    <td class="py-3 text-right font-semibold">₹{{ invoice.tax }}</td>
+                </tr>
+                <tr>
+                    <td class="py-3 font-medium">Service Charge (5%)</td>
+                    <td class="py-3 text-center">-</td>
+                    <td class="py-3 text-right">-</td>
+                    <td class="py-3 text-right font-semibold">₹{{ invoice.service_charge }}</td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="border-t border-slate-200 pt-4 w-64 ml-auto text-xs space-y-2">
+            <div class="flex justify-between text-slate-500">
+                <span>Subtotal</span>
+                <span class="font-medium">₹{{ invoice.subtotal }}</span>
+            </div>
+            <div class="flex justify-between text-slate-500">
+                <span>Tax</span>
+                <span class="font-medium">₹{{ invoice.tax }}</span>
+            </div>
+            <div class="flex justify-between text-slate-500">
+                <span>Service Charge</span>
+                <span class="font-medium">₹{{ invoice.service_charge }}</span>
+            </div>
+            <div class="flex justify-between text-slate-800 text-sm font-bold pt-2 border-t border-slate-100">
+                <span>Total Amount Due</span>
+                <span class="text-primary">₹{{ invoice.total }}</span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

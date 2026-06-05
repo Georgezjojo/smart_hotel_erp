@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block title %}All Invoices{% endblock %}
+{% block content %}
+<div class="glass-card p-5">
+    <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-bold">Invoices</h2>
+        <a href="#" class="bg-primary text-white px-4 py-2 rounded-lg text-sm">Generate Invoice</a>
+    </div>
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm text-left">
+            <thead class="bg-slate-100">
+                <tr>
+                    <th class="p-3">Invoice #</th>
+                    <th class="p-3">Guest</th>
+                    <th class="p-3">Date</th>
+                    <th class="p-3">Total</th>
+                    <th class="p-3">Status</th>
+                    <th class="p-3">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for inv in invoices %}
+                <tr class="border-t border-slate-100">
+                    <td class="p-3 font-medium">{{ inv.invoice_number }}</td>
+                    <td class="p-3">{{ inv.reservation.guest.get_full_name }}</td>
+                    <td class="p-3">{{ inv.issue_date|date:"M d, Y" }}</td>
+                    <td class="p-3">₹{{ inv.total }}</td>
+                    <td class="p-3">
+                        {% if inv.paid %}
+                            <span class="bg-emerald-100 text-emerald-800 text-xs px-2 py-0.5 rounded-full">Paid</span>
+                        {% else %}
+                            <span class="bg-amber-100 text-amber-800 text-xs px-2 py-0.5 rounded-full">Unpaid</span>
+                        {% endif %}
+                    </td>
+                    <td class="p-3">
+                        <a href="{% url 'invoice_detail' inv.pk %}" class="text-primary hover:underline">View</a>
+                        {% if not inv.paid %}
+                            | <a href="#" class="text-emerald-600 hover:underline">Record Payment</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="6" class="p-4 text-center text-slate-500">No invoices found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

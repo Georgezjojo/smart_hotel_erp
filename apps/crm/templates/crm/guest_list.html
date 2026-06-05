@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+{% block title %}Guest Profiles{% endblock %}
+{% block content %}
+
+<!-- Summary Cards -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+    <div class="glass-card p-3 flex items-center space-x-3">
+        <div class="p-2 bg-slate-100 dark:bg-slate-800 rounded-lg text-slate-500">
+            <i class="fa-solid fa-users"></i>
+        </div>
+        <div>
+            <p class="text-[10px] text-slate-400 uppercase">Total Guests</p>
+            <p class="font-bold text-lg">{{ total_guests }}</p>
+        </div>
+    </div>
+    <div class="glass-card p-3 flex items-center space-x-3">
+        <div class="p-2 bg-amber-100 text-amber-600 rounded-lg">
+            <i class="fa-solid fa-crown"></i>
+        </div>
+        <div>
+            <p class="text-[10px] text-slate-400 uppercase">VIP</p>
+            <p class="font-bold text-lg">{{ vip_count }}</p>
+        </div>
+    </div>
+    <div class="glass-card p-3 flex items-center space-x-3">
+        <div class="p-2 bg-blue-100 text-blue-600 rounded-lg">
+            <i class="fa-solid fa-user"></i>
+        </div>
+        <div>
+            <p class="text-[10px] text-slate-400 uppercase">Regular</p>
+            <p class="font-bold text-lg">{{ regular_count }}</p>
+        </div>
+    </div>
+    <div class="glass-card p-3 flex items-center space-x-3">
+        <div class="p-2 bg-rose-100 text-rose-600 rounded-lg">
+            <i class="fa-solid fa-ban"></i>
+        </div>
+        <div>
+            <p class="text-[10px] text-slate-400 uppercase">Blacklisted</p>
+            <p class="font-bold text-lg">{{ blacklisted }}</p>
+        </div>
+    </div>
+</div>
+
+<!-- Search & Filter Bar -->
+<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+    <h2 class="text-2xl font-bold text-slate-800 dark:text-white">Guest Directory</h2>
+    <div class="flex items-center space-x-3">
+        <div class="relative">
+            <input type="text" id="guestSearch" placeholder="Search by name or email..." class="w-60 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg pl-9 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition">
+            <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+        </div>
+        <select id="tierFilter" class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20">
+            <option value="all">All Tiers</option>
+            <option value="vip">VIP</option>
+            <option value="regular">Regular</option>
+            <option value="blacklisted">Blacklisted</option>
+        </select>
+    </div>
+</div>
+
+<!-- Guests Table -->
+<div class="glass-card overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm text-left" id="guestTable">
+            <thead class="bg-slate-100 dark:bg-slate-800">
+                <tr>
+                    <th class="p-3 font-semibold text-slate-600 dark:text-slate-300">Guest</th>
+                    <th class="p-3 font-semibold text-slate-600 dark:text-slate-300 hidden sm:table-cell">Email</th>
+                    <th class="p-3 font-semibold text-slate-600 dark:text-slate-300 hidden md:table-cell">Nationality</th>
+                    <th class="p-3 font-semibold text-slate-600 dark:text-slate-300">Tier</th>
+                    <th class="p-3 font-semibold text-slate-600 dark:text-slate-300 hidden lg:table-cell">Points</th>
+                    <th class="p-3 font-semibold text-slate-600 dark:text-slate-300 text-right">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-200 dark:divide-slate-700">
+                {% for guest in guests %}
+                <tr class="guest-row hover:bg-slate-50 dark:hover:bg-slate-800/50 transition cursor-pointer" data-url="{% url 'guest_profile' guest.pk %}" data-tier="{{ guest.tier }}">
+                    <td class="p-3">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-9 h-9 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 text-primary flex items-center justify-center font-bold text-sm border border-primary/20">
+                                {{ guest.user.get_initials }}
+                            </div>
+                            <span class="font-medium text-slate-800 dark:text-white">{{ guest.user.get_full_name }}</span>
+                        </div>
+                    </td>
+                    <td class="p-3 text-slate-500 hidden sm:table-cell">{{ guest.user.email }}</td>
+                    <td class="p-3 text-slate-500 hidden md:table-cell">{{ guest.nationality|default:"—" }}</td>
+                    <td class="p-3">
+                        <span class="px-2 py-0.5 rounded-full text-xs font-semibold
+                            {% if guest.tier == 'vip' %}bg-amber-100 text-amber-700 border border-amber-200
+                            {% elif guest.tier == 'regular' %}bg-blue-100 text-blue-700 border border-blue-200
+                            {% else %}bg-rose-100 text-rose-700 border border-rose-200{% endif %}">
+                            {{ guest.get_tier_display }}
+                        </span>
+                    </td>
+                    <td class="p-3 font-medium text-slate-600 hidden lg:table-cell">{{ guest.loyalty_points }}</td>
+                    <td class="p-3 text-right">
+                        <a href="{% url 'guest_profile' guest.pk %}" class="text-primary hover:underline text-xs font-medium">
+                            View Profile <i class="fa-solid fa-arrow-right ml-1 text-[10px]"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="p-6 text-center text-slate-500">No guests found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('guestSearch');
+        const tierFilter = document.getElementById('tierFilter');
+        const rows = document.querySelectorAll('.guest-row');
+
+        // Navigate to guest profile on row click
+        rows.forEach(row => {
+            row.addEventListener('click', function(e) {
+                // Don't navigate if the user clicked a link inside the row
+                if (e.target.closest('a')) return;
+                const url = this.dataset.url;
+                if (url) window.location.href = url;
+            });
+        });
+
+        function filterGuests() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const tier = tierFilter.value;
+
+            rows.forEach(row => {
+                const name = row.querySelector('td:first-child span:last-child').textContent.toLowerCase();
+                const email = row.querySelector('td:nth-child(2)')?.textContent.toLowerCase() || '';
+                const matchesSearch = name.includes(searchTerm) || email.includes(searchTerm);
+                const matchesTier = tier === 'all' || row.dataset.tier === tier;
+                row.style.display = matchesSearch && matchesTier ? '' : 'none';
+            });
+        }
+
+        searchInput.addEventListener('input', filterGuests);
+        tierFilter.addEventListener('change', filterGuests);
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block title %}Inventory Management{% endblock %}
+{% block content %}
+<div class="glass-card p-5">
+    <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-bold">Stock Inventory</h2>
+        <a href="#" class="bg-primary text-white px-4 py-2 rounded-lg text-sm">Add New Item</a>
+    </div>
+
+    {% if low_stock %}
+    <div class="bg-amber-50 border border-amber-200 text-amber-800 p-3 rounded-lg mb-4 text-sm flex items-center space-x-2">
+        <i class="fa-solid fa-triangle-exclamation text-amber-500"></i>
+        <span>Low stock alert for: 
+            {% for item in low_stock %}
+                <strong>{{ item.name }}</strong>{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+        </span>
+    </div>
+    {% endif %}
+
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm text-left">
+            <thead class="bg-slate-100 dark:bg-slate-800">
+                <tr>
+                    <th class="p-3">Item</th>
+                    <th class="p-3">Category</th>
+                    <th class="p-3">Quantity</th>
+                    <th class="p-3">Unit</th>
+                    <th class="p-3">Reorder Level</th>
+                    <th class="p-3">Expiry</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-200 dark:divide-slate-700">
+                {% for item in items %}
+                <tr class="{% if item.quantity <= item.reorder_level %}bg-rose-50 dark:bg-rose-900/20{% endif %}">
+                    <td class="p-3 font-medium">{{ item.name }}</td>
+                    <td class="p-3">{{ item.category }}</td>
+                    <td class="p-3 {% if item.quantity <= item.reorder_level %}text-rose-600 font-bold{% endif %}">{{ item.quantity }}</td>
+                    <td class="p-3">{{ item.unit }}</td>
+                    <td class="p-3">{{ item.reorder_level }}</td>
+                    <td class="p-3">{{ item.expiry_date|default:"-" }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="6" class="p-4 text-center text-slate-500">No inventory items found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Operations Chat{% endblock %}
+{% block content %}
+<div class="w-full max-w-md mx-auto glass-card flex flex-col h-[500px] overflow-hidden">
+    <div class="p-4 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+            <div class="relative">
+                <div class="w-9 h-9 rounded-full bg-primary text-white font-bold flex items-center justify-center text-xs" id="chatAvatar">AJ</div>
+                <span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-white rounded-full"></span>
+            </div>
+            <div>
+                <h3 class="text-sm font-bold text-slate-800">Front Desk</h3>
+                <p class="text-[10px] text-slate-400">Operations Group</p>
+            </div>
+        </div>
+    </div>
+    <div class="flex-1 p-4 overflow-y-auto space-y-4 bg-slate-50/30 custom-scrollbar text-xs" id="chatLog">
+        <!-- messages loaded via WebSocket -->
+    </div>
+    <div class="p-3 border-t border-slate-100 bg-white flex items-center space-x-2">
+        <input type="text" id="chatMessageInput" placeholder="Type a message..." class="flex-1 text-xs border border-slate-200 rounded-lg px-3 py-2 outline-none focus:border-primary">
+        <button id="sendMessageBtn" class="bg-primary hover:bg-primaryDark text-white w-8 h-8 rounded-lg flex items-center justify-center transition shadow-sm">
+            <i class="fa-solid fa-paper-plane text-xs"></i>
+        </button>
+    </div>
+</div>
+{% endblock %}
+{% block extra_scripts %}
+<script>
+    const chatLog = document.getElementById('chatLog');
+    const input = document.getElementById('chatMessageInput');
+    const sendBtn = document.getElementById('sendMessageBtn');
+    const ws = new WebSocket('ws://' + window.location.host + '/ws/chat/');
+
+    ws.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        const msgDiv = document.createElement('div');
+        msgDiv.className = 'flex items-start space-x-2 max-w-[85%]';
+        const isMine = data.user === '{{ user.get_full_name }}';
+        if (isMine) {
+            msgDiv.classList.add('ml-auto', 'justify-end');
+            msgDiv.innerHTML = `<div class="p-3 bg-primary text-white rounded-2xl rounded-tr-none shadow-sm">${data.message}</div>`;
+        } else {
+            msgDiv.innerHTML = `<div class="p-3 bg-white border border-slate-100 rounded-2xl rounded-tl-none shadow-sm text-slate-700"><strong>${data.user}</strong><br>${data.message}</div>`;
+        }
+        chatLog.appendChild(msgDiv);
+        chatLog.scrollTop = chatLog.scrollHeight;
+    };
+
+    sendBtn.addEventListener('click', () => {
+        const message = input.value.trim();
+        if (message) {
+            ws.send(JSON.stringify({message}));
+            input.value = '';
+        }
+    });
+
+    input.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') sendBtn.click();
+    });
+</script>
+{% endblock %}

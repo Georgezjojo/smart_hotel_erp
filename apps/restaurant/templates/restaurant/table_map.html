@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}Table Map{% endblock %}
+{% block content %}
+<h2 class="text-2xl font-bold mb-4">Table Layout</h2>
+<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+    {% for table in tables %}
+    <div class="glass-card p-4 text-center cursor-pointer {% if table.is_occupied %}border-rose-300 bg-rose-50{% endif %}">
+        <h3 class="font-bold">Table {{ table.number }}</h3>
+        <p class="text-xs">Capacity: {{ table.capacity }}</p>
+        <span class="text-xs {% if table.is_occupied %}text-rose-600{% else %}text-emerald-600{% endif %}">
+            {{ table.is_occupied|yesno:"Occupied,Available" }}
+        </span>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

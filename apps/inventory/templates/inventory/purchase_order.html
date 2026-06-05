@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %}Purchase Orders{% endblock %}
+{% block content %}
+<div class="glass-card p-5">
+    <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-bold">Purchase Orders</h2>
+        <a href="#" class="bg-primary text-white px-4 py-2 rounded-lg text-sm">New Order</a>
+    </div>
+
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm text-left">
+            <thead class="bg-slate-100 dark:bg-slate-800">
+                <tr>
+                    <th class="p-3">Item</th>
+                    <th class="p-3">Quantity</th>
+                    <th class="p-3">Order Date</th>
+                    <th class="p-3">Received</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-200 dark:divide-slate-700">
+                {% for order in orders %}
+                <tr>
+                    <td class="p-3 font-medium">{{ order.item.name }}</td>
+                    <td class="p-3">{{ order.quantity }}</td>
+                    <td class="p-3">{{ order.order_date }}</td>
+                    <td class="p-3">
+                        {% if order.received %}
+                            <span class="text-emerald-600 font-semibold">Yes</span>
+                        {% else %}
+                            <span class="text-amber-600 font-semibold">Pending</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="4" class="p-4 text-center text-slate-500">No purchase orders yet.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

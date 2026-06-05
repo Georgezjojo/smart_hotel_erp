@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Profit & Loss{% endblock %}
+{% block extra_head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+{% block content %}
+
+<!-- Summary Cards -->
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+    <div class="glass-card p-4 flex items-center space-x-4">
+        <div class="p-3 bg-emerald-50 text-emerald-600 rounded-xl"><i class="fa-solid fa-arrow-trend-up text-xl"></i></div>
+        <div>
+            <p class="text-xs text-slate-400 uppercase">Total Income</p>
+            <h3 class="text-2xl font-bold text-emerald-600">₹{{ total_income|floatformat:0 }}</h3>
+        </div>
+    </div>
+    <div class="glass-card p-4 flex items-center space-x-4">
+        <div class="p-3 bg-rose-50 text-rose-600 rounded-xl"><i class="fa-solid fa-arrow-trend-down text-xl"></i></div>
+        <div>
+            <p class="text-xs text-slate-400 uppercase">Total Expenses</p>
+            <h3 class="text-2xl font-bold text-rose-600">₹{{ total_expenses|floatformat:0 }}</h3>
+        </div>
+    </div>
+    <div class="glass-card p-4 flex items-center space-x-4">
+        <div class="p-3 bg-blue-50 text-blue-600 rounded-xl"><i class="fa-solid fa-wallet text-xl"></i></div>
+        <div>
+            <p class="text-xs text-slate-400 uppercase">Net Profit</p>
+            <h3 class="text-2xl font-bold {% if profit >= 0 %}text-blue-600{% else %}text-rose-600{% endif %}">₹{{ profit|floatformat:0 }}</h3>
+        </div>
+    </div>
+</div>
+
+<!-- Chart -->
+<div class="glass-card p-5 mb-6">
+    <h3 class="font-bold text-slate-800 dark:text-white mb-3">Monthly Income vs Expenses ({{ year }})</h3>
+    <canvas id="pnlChart" height="80"></canvas>
+</div>
+
+<!-- Entries Table -->
+<div class="glass-card overflow-hidden">
+    <div class="p-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50">
+        <h3 class="font-bold text-slate-800 dark:text-white">Recent Transactions</h3>
+    </div>
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm text-left">
+            <thead class="bg-slate-100 dark:bg-slate-800">
+                <tr>
+                    <th class="p-3">Date</th>
+                    <th class="p-3">Description</th>
+                    <th class="p-3">Category</th>
+                    <th class="p-3 text-right">Amount</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-200 dark:divide-slate-700">
+                {% for entry in entries %}
+                <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
+                    <td class="p-3 text-slate-500">{{ entry.date|date:"M d, Y" }}</td>
+                    <td class="p-3 font-medium">{{ entry.description }}</td>
+                    <td class="p-3">
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold
+                            {% if entry.entry_type == 'income' %}bg-emerald-100 text-emerald-700
+                            {% else %}bg-rose-100 text-rose-700{% endif %}">
+                            {{ entry.category|default:entry.get_entry_type_display }}
+                        </span>
+                    </td>
+                    <td class="p-3 text-right font-bold
+                        {% if entry.entry_type == 'income' %}text-emerald-600{% else %}text-rose-600{% endif %}">
+                        {% if entry.entry_type == 'income' %}+{% else %}-{% endif %} ₹{{ entry.amount|floatformat:2 }}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="p-4 text-center text-slate-500">No entries recorded yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+{{ monthly_labels|json_script:"monthlyLabels" }}
+{{ monthly_income|json_script:"monthlyIncome" }}
+{{ monthly_expenses|json_script:"monthlyExpenses" }}
+
+<script>
+    const monthlyLabels = JSON.parse(document.getElementById('monthlyLabels').textContent);
+    const monthlyIncome = JSON.parse(document.getElementById('monthlyIncome').textContent);
+    const monthlyExpenses = JSON.parse(document.getElementById('monthlyExpenses').textContent);
+
+    const ctx = document.getElementById('pnlChart')?.getContext('2d');
+    if (ctx) {
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: monthlyLabels,
+                datasets: [
+                    {
+                        label: 'Income',
+                        data: monthlyIncome,
+                        backgroundColor: 'rgba(16, 185, 129, 0.7)', // emerald
+                        borderColor: '#059669',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Expenses',
+                        data: monthlyExpenses,
+                        backgroundColor: 'rgba(239, 68, 68, 0.7)',  // rose
+                        borderColor: '#dc2626',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'bottom' }
+                },
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+    }
+</script>
+{% endblock %}

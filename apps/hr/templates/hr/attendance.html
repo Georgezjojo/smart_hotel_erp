@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% block title %}Attendance{% endblock %}
+{% block content %}
+
+<!-- Summary Cards -->
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+    <div class="glass-card p-3 flex items-center space-x-3">
+        <div class="p-2 bg-emerald-100 text-emerald-600 rounded-lg"><i class="fa-solid fa-user-check"></i></div>
+        <div>
+            <p class="text-[10px] text-slate-400 uppercase">Present Today</p>
+            <p class="font-bold text-lg">{{ present_count }}</p>
+        </div>
+    </div>
+    <div class="glass-card p-3 flex items-center space-x-3">
+        <div class="p-2 bg-rose-100 text-rose-600 rounded-lg"><i class="fa-solid fa-user-xmark"></i></div>
+        <div>
+            <p class="text-[10px] text-slate-400 uppercase">Absent</p>
+            <p class="font-bold text-lg">{{ absent_count }}</p>
+        </div>
+    </div>
+    <div class="glass-card p-3 flex items-center space-x-3">
+        <div class="p-2 bg-blue-100 text-blue-600 rounded-lg"><i class="fa-solid fa-clock"></i></div>
+        <div>
+            <p class="text-[10px] text-slate-400 uppercase">Late Arrivals</p>
+            <p class="font-bold text-lg">0</p>  <!-- can be dynamic -->
+        </div>
+    </div>
+    <div class="glass-card p-3 flex items-center space-x-3">
+        <div class="p-2 bg-slate-100 text-slate-600 rounded-lg"><i class="fa-solid fa-users"></i></div>
+        <div>
+            <p class="text-[10px] text-slate-400 uppercase">Total Employees</p>
+            <p class="font-bold text-lg">{{ total_employees }}</p>
+        </div>
+    </div>
+</div>
+
+<!-- Date Filter -->
+<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+    <h2 class="text-2xl font-bold text-slate-800 dark:text-white">Today's Attendance – {{ today|date:"M d, Y" }}</h2>
+    <div class="relative">
+        <input type="date" id="attendanceDate" value="{{ today|date:'Y-m-d' }}" class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition">
+    </div>
+</div>
+
+<!-- Attendance Table -->
+<div class="glass-card overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm text-left" id="attendanceTable">
+            <thead class="bg-slate-100 dark:bg-slate-800">
+                <tr>
+                    <th class="p-3 font-semibold text-slate-600 dark:text-slate-300">Employee</th>
+                    <th class="p-3 font-semibold text-slate-600 dark:text-slate-300 hidden sm:table-cell">Department</th>
+                    <th class="p-3 font-semibold text-slate-600 dark:text-slate-300">Status</th>
+                    <th class="p-3 font-semibold text-slate-600 dark:text-slate-300">Check-in</th>
+                    <th class="p-3 font-semibold text-slate-600 dark:text-slate-300 hidden md:table-cell">Check-out</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-200 dark:divide-slate-700">
+                {% for att in attendances %}
+                <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
+                    <td class="p-3">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 text-primary flex items-center justify-center font-bold text-sm border border-primary/20">
+                                {{ att.employee.user.get_initials }}
+                            </div>
+                            <span class="font-medium">{{ att.employee.user.get_full_name }}</span>
+                        </div>
+                    </td>
+                    <td class="p-3 text-slate-500 hidden sm:table-cell">{{ att.employee.department }}</td>
+                    <td class="p-3">
+                        {% if att.check_in %}
+                            <span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700 border border-emerald-200">Present</span>
+                        {% else %}
+                            <span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-rose-100 text-rose-700 border border-rose-200">Absent</span>
+                        {% endif %}
+                    </td>
+                    <td class="p-3 text-slate-500">{{ att.check_in|date:"H:i"|default:"—" }}</td>
+                    <td class="p-3 text-slate-500 hidden md:table-cell">{{ att.check_out|date:"H:i"|default:"—" }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="p-4 text-center text-slate-500">No attendance records for today.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // Optional: Add AJAX to load attendance for selected date
+    const dateInput = document.getElementById('attendanceDate');
+    if (dateInput) {
+        dateInput.addEventListener('change', function() {
+            const date = this.value;
+            window.location.href = `?date=${date}`;
+        });
+    }
+</script>
+{% endblock %}

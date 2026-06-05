@@ -1,0 +1,214 @@
+{% extends 'base.html' %}
+{% block title %}Kitchen Display{% endblock %}
+{% block content %}
+<!-- KDS Header with stats -->
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+    <div class="glass-card p-3 flex items-center space-x-3">
+        <div class="p-2 bg-amber-100 text-amber-600 rounded-lg"><i class="fa-solid fa-clock"></i></div>
+        <div>
+            <p class="text-[10px] text-slate-400 uppercase">Pending</p>
+            <p class="font-bold text-lg" id="pendingCount">0</p>
+        </div>
+    </div>
+    <div class="glass-card p-3 flex items-center space-x-3">
+        <div class="p-2 bg-blue-100 text-blue-600 rounded-lg"><i class="fa-solid fa-fire-burner"></i></div>
+        <div>
+            <p class="text-[10px] text-slate-400 uppercase">Preparing</p>
+            <p class="font-bold text-lg" id="preparingCount">0</p>
+        </div>
+    </div>
+    <div class="glass-card p-3 flex items-center space-x-3">
+        <div class="p-2 bg-emerald-100 text-emerald-600 rounded-lg"><i class="fa-solid fa-check-circle"></i></div>
+        <div>
+            <p class="text-[10px] text-slate-400 uppercase">Ready</p>
+            <p class="font-bold text-lg" id="readyCount">0</p>
+        </div>
+    </div>
+    <div class="glass-card p-3 flex items-center space-x-3">
+        <div class="p-2 bg-slate-100 text-slate-600 rounded-lg"><i class="fa-solid fa-list-check"></i></div>
+        <div>
+            <p class="text-[10px] text-slate-400 uppercase">Total</p>
+            <p class="font-bold text-lg" id="totalCount">0</p>
+        </div>
+    </div>
+</div>
+
+<!-- Filter Buttons -->
+<div class="flex flex-wrap items-center gap-2 mb-4">
+    <button onclick="filterOrders('all')" class="kds-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition bg-primary text-white">All Orders</button>
+    <button onclick="filterOrders('pending')" class="kds-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">Pending</button>
+    <button onclick="filterOrders('preparing')" class="kds-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">Preparing</button>
+    <button onclick="filterOrders('ready')" class="kds-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">Ready</button>
+</div>
+
+<!-- Orders Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4" id="kdsContainer">
+    {% for order in orders %}
+    <div class="kds-card glass-card overflow-hidden transition-all duration-300 hover:shadow-lg" data-order-id="{{ order.id }}" data-status="{{ order.status }}" data-priority="{{ order.priority|yesno:'true,false' }}">
+        <!-- Card Header -->
+        <div class="px-4 py-3 flex justify-between items-center border-b border-slate-100 dark:border-slate-700
+            {% if order.priority %}bg-rose-50 dark:bg-rose-900/20{% else %}bg-slate-50 dark:bg-slate-800/50{% endif %}">
+            <div class="flex items-center space-x-2">
+                {% if order.priority %}
+                    <i class="fa-solid fa-star text-rose-500 animate-pulse"></i>
+                {% endif %}
+                <span class="font-bold text-sm">{{ order.table|default:order.room }}</span>
+            </div>
+            <span class="text-[10px] font-mono text-slate-500 kds-timer" data-created="{{ order.created_at.isoformat }}">
+                {{ order.created_at|timesince }} ago
+            </span>
+        </div>
+
+        <!-- Items List -->
+        <div class="p-4">
+            <ul class="space-y-1 text-sm">
+                {% for item in order.get_items_list %}
+                <li class="flex items-center space-x-2">
+                    <i class="fa-solid fa-circle text-[6px] text-primary"></i>
+                    <span>{{ item }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+            {% if order.special_instructions %}
+            <div class="mt-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-lg p-2 text-xs text-amber-800 dark:text-amber-200">
+                <i class="fa-solid fa-note-sticky mr-1"></i> {{ order.special_instructions }}
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="px-4 py-3 border-t border-slate-100 dark:border-slate-700 flex justify-between items-center">
+            <span class="text-xs px-2 py-0.5 rounded-full font-semibold status-badge
+                {% if order.status == 'pending' %}bg-amber-100 text-amber-700
+                {% elif order.status == 'preparing' %}bg-blue-100 text-blue-700
+                {% else %}bg-emerald-100 text-emerald-700{% endif %}">
+                {{ order.get_status_display }}
+            </span>
+            <div class="flex space-x-1">
+                {% if order.status == 'pending' %}
+                <button class="kds-action bg-blue-500 hover:bg-blue-600 text-white text-xs px-3 py-1.5 rounded transition" data-status="preparing">
+                    <i class="fa-solid fa-play mr-1"></i> Start
+                </button>
+                {% elif order.status == 'preparing' %}
+                <button class="kds-action bg-emerald-500 hover:bg-emerald-600 text-white text-xs px-3 py-1.5 rounded transition" data-status="ready">
+                    <i class="fa-solid fa-check mr-1"></i> Ready
+                </button>
+                <button class="kds-action bg-rose-500 hover:bg-rose-600 text-white text-xs px-3 py-1.5 rounded transition" data-status="pending">
+                    <i class="fa-solid fa-undo mr-1"></i> Revert
+                </button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-span-full text-center py-12 text-slate-500">
+        <i class="fa-solid fa-check-circle text-4xl mb-3 opacity-50"></i>
+        <p>No active orders. Great job!</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    const ws = new WebSocket('ws://' + window.location.host + '/ws/kitchen/');
+
+    // Update timers every 30 seconds
+    setInterval(updateTimers, 30000);
+    function updateTimers() {
+        document.querySelectorAll('.kds-timer').forEach(el => {
+            const created = new Date(el.dataset.created);
+            const seconds = Math.floor((new Date() - created) / 1000);
+            const minutes = Math.floor(seconds / 60);
+            const hours = Math.floor(minutes / 60);
+            if (hours > 0) el.textContent = `${hours}h ${minutes % 60}m ago`;
+            else if (minutes > 0) el.textContent = `${minutes}m ago`;
+            else el.textContent = `${seconds}s ago`;
+        });
+    }
+
+    // WebSocket message handler
+    ws.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        const orderEl = document.querySelector(`.kds-card[data-order-id="${data.order_id}"]`);
+        if (orderEl && data.status === 'ready') {
+            // Add a class to fade out and remove
+            orderEl.classList.add('animate__fadeOutRight');
+            setTimeout(() => {
+                orderEl.remove();
+                updateCounts();
+            }, 500);
+        } else if (orderEl) {
+            // Update status badge and action buttons without reload
+            orderEl.dataset.status = data.status;
+            // Update badge
+            const badge = orderEl.querySelector('.status-badge');
+            badge.className = 'text-xs px-2 py-0.5 rounded-full font-semibold status-badge';
+            if (data.status === 'pending') badge.classList.add('bg-amber-100', 'text-amber-700');
+            else if (data.status === 'preparing') badge.classList.add('bg-blue-100', 'text-blue-700');
+            else badge.classList.add('bg-emerald-100', 'text-emerald-700');
+            badge.textContent = data.status.charAt(0).toUpperCase() + data.status.slice(1);
+
+            // Replace action buttons
+            const actionDiv = orderEl.querySelector('.flex.space-x-1');
+            if (data.status === 'pending') {
+                actionDiv.innerHTML = `<button class="kds-action bg-blue-500 hover:bg-blue-600 text-white text-xs px-3 py-1.5 rounded transition" data-status="preparing"><i class="fa-solid fa-play mr-1"></i> Start</button>`;
+            } else if (data.status === 'preparing') {
+                actionDiv.innerHTML = `
+                    <button class="kds-action bg-emerald-500 hover:bg-emerald-600 text-white text-xs px-3 py-1.5 rounded transition" data-status="ready"><i class="fa-solid fa-check mr-1"></i> Ready</button>
+                    <button class="kds-action bg-rose-500 hover:bg-rose-600 text-white text-xs px-3 py-1.5 rounded transition" data-status="pending"><i class="fa-solid fa-undo mr-1"></i> Revert</button>
+                `;
+            } else {
+                actionDiv.innerHTML = '';
+            }
+            bindActionButtons(orderEl);
+        }
+        updateCounts();
+    };
+
+    // Bind action buttons
+    function bindActionButtons(card) {
+        card.querySelectorAll('.kds-action').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const newStatus = this.dataset.status;
+                const orderId = card.dataset.orderId;
+                ws.send(JSON.stringify({ action: 'update_status', order_id: orderId, status: newStatus }));
+                // Optimistic UI update (already handled in click)
+            });
+        });
+    }
+
+    // Initial binding
+    document.querySelectorAll('.kds-card').forEach(card => bindActionButtons(card));
+
+    // Filter function
+    function filterOrders(status) {
+        document.querySelectorAll('.kds-filter-btn').forEach(btn => {
+            btn.classList.remove('bg-primary', 'text-white');
+            btn.classList.add('text-slate-600', 'dark:text-slate-300', 'hover:bg-slate-100');
+        });
+        event.target.classList.add('bg-primary', 'text-white');
+        event.target.classList.remove('text-slate-600', 'dark:text-slate-300', 'hover:bg-slate-100');
+
+        document.querySelectorAll('.kds-card').forEach(card => {
+            card.style.display = (status === 'all' || card.dataset.status === status) ? '' : 'none';
+        });
+    }
+
+    // Counts
+    function updateCounts() {
+        const cards = document.querySelectorAll('.kds-card');
+        let pending = 0, preparing = 0, ready = 0;
+        cards.forEach(card => {
+            if (card.dataset.status === 'pending') pending++;
+            else if (card.dataset.status === 'preparing') preparing++;
+            else if (card.dataset.status === 'ready') ready++;
+        });
+        document.getElementById('pendingCount').textContent = pending;
+        document.getElementById('preparingCount').textContent = preparing;
+        document.getElementById('readyCount').textContent = ready;
+        document.getElementById('totalCount').textContent = cards.length;
+    }
+    updateCounts();
+</script>
+{% endblock %}

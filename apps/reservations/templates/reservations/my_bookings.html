@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block title %}My Bookings{% endblock %}
+{% block content %}
+<h2 class="text-2xl font-bold mb-4">My Bookings</h2>
+{% if bookings %}
+<ul class="space-y-3">
+    {% for b in bookings %}
+    <li class="glass-card p-3 flex justify-between">
+        <div>
+            <span class="font-medium">{{ b.room.room_number }}</span> – {{ b.check_in }} to {{ b.check_out }}
+        </div>
+        <span class="text-xs px-2 py-0.5 rounded {{ b.status }}">{{ b.get_status_display }}</span>
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p class="text-slate-500">You have no bookings yet.</p>
+{% endif %}
+{% endblock %}

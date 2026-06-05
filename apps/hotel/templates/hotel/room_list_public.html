@@ -1,0 +1,35 @@
+{% extends 'base_public.html' %}
+{% block title %}Our Rooms – Grand Horizon{% endblock %}
+{% block content %}
+<div class="max-w-7xl mx-auto py-8 px-4">
+    <h2 class="text-3xl font-bold mb-6 text-center">Available Rooms</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for room in rooms %}
+        <div class="glass-card overflow-hidden group transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+            <div class="h-48 bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center relative">
+                {% if room.image %}
+                    <img src="{{ room.image.url }}" class="w-full h-full object-cover">
+                {% else %}
+                    <i class="fa-solid fa-bed text-5xl text-slate-300"></i>
+                {% endif %}
+            </div>
+            <div class="p-5">
+                <h3 class="font-bold text-xl">{{ room.room_number }}</h3>
+                <p class="text-sm text-slate-500">{{ room.room_type.name }} – Floor {{ room.floor }}</p>
+                <div class="flex items-center justify-between mt-3">
+                    <span class="text-primary font-bold text-lg">₹{{ room.room_type.base_rate }}<span class="text-xs text-slate-400 font-normal">/night</span></span>
+                    <span class="text-xs text-slate-400">Up to {{ room.room_type.max_occupancy }} guests</span>
+                </div>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'add_booking' %}?room={{ room.room_number }}" class="mt-4 block text-center bg-primary hover:bg-primaryDark text-white px-6 py-2 rounded-lg transition">Book Now</a>
+                {% else %}
+                    <a href="{% url 'login' %}?next={% url 'room_list_public' %}" class="mt-4 block text-center bg-slate-200 text-slate-700 px-6 py-2 rounded-lg hover:bg-primary hover:text-white transition">Login to Book</a>
+                {% endif %}
+            </div>
+        </div>
+        {% empty %}
+        <p class="col-span-full text-center text-slate-500">No rooms available at the moment.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

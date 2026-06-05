@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}New Financial Entry{% endblock %}
+{% block content %}
+<div class="max-w-2xl mx-auto glass-card p-6">
+    <a href="{% url 'profit_loss' %}" class="text-slate-500 hover:text-primary inline-block mb-4">
+        <i class="fa-solid fa-arrow-left mr-1"></i> Back to P&L
+    </a>
+    <h2 class="text-2xl font-bold text-slate-800 dark:text-white mb-6">New Income / Expense Entry</h2>
+
+    {% if messages %}
+        {% for msg in messages %}
+            <div class="px-4 py-2 rounded text-sm mb-4 {% if msg.tags == 'success' %}bg-emerald-100 text-emerald-700{% else %}bg-rose-100 text-rose-700{% endif %}">{{ msg }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="post" class="space-y-4">
+        {% csrf_token %}
+        <div>
+            <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Date</label>
+            <input type="date" name="date" required class="w-full border border-slate-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition">
+        </div>
+        <div>
+            <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Description</label>
+            <textarea name="description" required rows="2" class="w-full border border-slate-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition"></textarea>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Amount (₹)</label>
+                <input type="number" name="amount" step="0.01" required class="w-full border border-slate-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition">
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Type</label>
+                <select name="entry_type" required class="w-full border border-slate-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition">
+                    <option value="income">Income</option>
+                    <option value="expense">Expense</option>
+                </select>
+            </div>
+        </div>
+        <div>
+            <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Category (optional)</label>
+            <input type="text" name="category" placeholder="e.g., Utilities, Salary, Room Service" class="w-full border border-slate-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition">
+        </div>
+        <button type="submit" class="w-full bg-primary hover:bg-primaryDark text-white font-semibold py-2.5 rounded-lg transition shadow-md">
+            <i class="fa-solid fa-save mr-2"></i> Save Entry
+        </button>
+    </form>
+</div>
+{% endblock %}
