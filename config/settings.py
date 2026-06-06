@@ -65,7 +65,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'apps.accounts.middleware.ForcePasswordChangeMiddleware',
+    # 'apps.accounts.middleware.ForcePasswordChangeMiddleware',   # disabled – no more forced change
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
