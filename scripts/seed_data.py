@@ -78,9 +78,22 @@ def create_users():
         )
         users[email] = user
 
-    # 👇 ADDED: Ensure an admin superuser always exists for easy login
-    if not User.objects.filter(email='admin@example.com').exists():
-        User.objects.create_superuser('admin@example.com', 'admin@example.com', 'Admin123')
+    # ✅ SAFE admin superuser creation (will never throw duplicate error)
+    admin_user, admin_created = User.objects.get_or_create(
+        username='admin@example.com',
+        defaults={
+            'email': 'admin@example.com',
+            'is_superuser': True,
+            'is_staff': True,
+        }
+    )
+    if admin_created:
+        admin_user.set_password('Admin123')
+        admin_user.save()
+    # If the admin already existed, make sure password is correct (optional)
+    else:
+        admin_user.set_password('Admin123')
+        admin_user.save()
 
     return users
 
