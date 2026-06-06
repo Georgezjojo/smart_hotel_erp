@@ -87,13 +87,14 @@ def create_users():
             'is_staff': True,
         }
     )
+    # Always ensure the role is set correctly
+    admin_user.role = 'super_admin'
     if admin_created:
         admin_user.set_password('Admin123')
-        admin_user.save()
-    # If the admin already existed, make sure password is correct (optional)
     else:
+        # update password just in case (idempotent)
         admin_user.set_password('Admin123')
-        admin_user.save()
+    admin_user.save()
 
     return users
 
