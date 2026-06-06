@@ -94,7 +94,8 @@ ASGI_APPLICATION = 'config.asgi.application'
 
 # ================== DATABASE ==================
 DATABASES = {
-    'default': env.db('DATABASE_URL')
+    'default': env.db('DATABASE_URL', default='sqlite:///db.sqlite3')   # dummy for build; real PostgreSQL URL comes from Railway env
+
 }
 
 # ================== REDIS / CHANNELS ==================

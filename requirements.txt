@@ -6,9 +6,6 @@ channels
 channels-redis
 celery
 redis
-mysqlclient
+psycopg2-binary
 Pillow
 django-environ
-whitenoise
-uvicorn[standard]
-gunicorn
