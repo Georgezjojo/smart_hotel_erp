@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 
 from apps.hotel.models import RoomType, Room
@@ -7,7 +7,9 @@ from apps.reservations.models import Reservation
 
 
 def home(request):
-    """Public landing page showing room types."""
+    """Public landing page showing room types. If already logged in, go to dashboard."""
+    if request.user.is_authenticated:
+        return redirect('dashboard')
     room_types = RoomType.objects.all()
     return render(request, 'home.html', {'room_types': room_types})
 

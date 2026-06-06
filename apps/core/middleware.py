@@ -2,12 +2,11 @@ from django.shortcuts import redirect
 
 class RedirectAuthenticatedUsersMiddleware:
     """
-    If a user is authenticated and tries to access any public-only page,
-    redirect them to the dashboard.
+    If a user is authenticated and tries to access any of the listed
+    public-only pages, redirect them to the dashboard.
+    (The homepage redirect is handled in the home view.)
     """
     PUBLIC_ONLY_PATHS = [
-        '/',
-        '/home/',
         '/accounts/login/',
         '/accounts/register/',
         '/accounts/password/reset/',
