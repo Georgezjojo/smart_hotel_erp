@@ -77,6 +77,11 @@ def create_users():
             }
         )
         users[email] = user
+
+    # 👇 ADDED: Ensure an admin superuser always exists for easy login
+    if not User.objects.filter(email='admin@example.com').exists():
+        User.objects.create_superuser('admin@example.com', 'admin@example.com', 'Admin123')
+
     return users
 
 def create_room_types():
