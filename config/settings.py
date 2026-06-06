@@ -16,7 +16,7 @@ ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['*'])
 # Trust the HTTPS proxy that Railway uses
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
-# Redirect HTTP to HTTPS (only when DEBUG=False)
+# Redirect HTTP to HTTPS only when DEBUG=False
 if not DEBUG:
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True
@@ -30,7 +30,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'whitenoise.runserver_nostatic',        # WhiteNoise
+    'whitenoise.runserver_nostatic',        # WhiteNoise (disable Django's static)
     'rest_framework',
     'corsheaders',
     'channels',
@@ -93,6 +93,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 ASGI_APPLICATION = 'config.asgi.application'
 
 # ================== DATABASE ==================
+# Railway provides DATABASE_URL (postgres://...) – env.db() parses it correctly
 DATABASES = {
     'default': env.db('DATABASE_URL', default='mysql://root@localhost:3306/hotel_erp')
 }
