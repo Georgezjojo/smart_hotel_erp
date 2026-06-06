@@ -30,11 +30,10 @@
     <!-- MOBILE SIDEBAR OVERLAY -->
     <div id="sidebarOverlay" class="fixed inset-0 bg-black/50 z-20 hidden" onclick="closeSidebar()"></div>
 
-    <!-- LEFT SIDEBAR (toggle moved to main header) -->
+    <!-- LEFT SIDEBAR -->
     <aside id="sidebar" class="bg-slate-900 text-slate-300 flex-col hidden md:flex z-30 shrink-0 shadow-2xl fixed md:relative inset-y-0 left-0 transition-all duration-300 ease-in-out w-64" data-expanded="true">
-        <!-- Sidebar Header – GH badge and hotel name now very close -->
+        <!-- Sidebar Header -->
         <div class="p-5 border-b border-slate-800/80 flex items-center space-x-1 bg-slate-950/20">
-            <!-- "GH" badge with right margin unchanged -->
             <span class="bg-primary text-white text-sm font-extrabold px-2.5 py-1.5 rounded-lg border border-primary/20 shadow-lg shrink-0 ml-10">
                 GH
             </span>
@@ -51,62 +50,110 @@
                 <i class="fa-solid fa-chart-pie text-primary w-5"></i>
                 <span class="sidebar-text">Dashboard</span>
             </a>
+
+            <!-- Room Management – visible to all staff except guests -->
+            {% if user.role not in 'guest' %}
             <a href="{% url 'room_list' %}" class="sidebar-link flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm text-slate-400 hover:bg-slate-800 hover:text-white" title="Room Management">
                 <i class="fa-solid fa-bed w-5"></i>
                 <span class="sidebar-text">Room Management</span>
             </a>
+            {% endif %}
+
+            <!-- Reservations – staff who handle bookings -->
+            {% if user.role in 'super_admin,owner,manager,receptionist' %}
             <a href="{% url 'reservation_list' %}" class="sidebar-link flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm text-slate-400 hover:bg-slate-800 hover:text-white" title="Reservations">
                 <i class="fa-solid fa-calendar-days w-5"></i>
                 <span class="sidebar-text">Reservations</span>
             </a>
+            {% endif %}
+
+            <!-- Guest Profiles – front‑desk roles -->
+            {% if user.role in 'super_admin,owner,manager,receptionist' %}
             <a href="{% url 'guest_list' %}" class="sidebar-link flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm text-slate-400 hover:bg-slate-800 hover:text-white" title="Guest Profiles">
                 <i class="fa-solid fa-users w-5"></i>
                 <span class="sidebar-text">Guest Profiles</span>
             </a>
+            {% endif %}
 
             <!-- Management -->
             <div class="sidebar-text text-xs font-semibold text-slate-500 uppercase tracking-wider px-3 pt-4 pb-1">Management</div>
+
+            <!-- Billing & Payments -->
+            {% if user.role in 'super_admin,owner,manager,accountant' %}
             <a href="{% url 'invoice_list' %}" class="sidebar-link flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm text-slate-400 hover:bg-slate-800 hover:text-white" title="Billing & Payments">
                 <i class="fa-solid fa-file-invoice-dollar w-5"></i>
                 <span class="sidebar-text">Billing & Payments</span>
             </a>
+            {% endif %}
+
+            <!-- Inventory -->
+            {% if user.role in 'super_admin,owner,manager,store_manager' %}
             <a href="{% url 'inventory_list' %}" class="sidebar-link flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm text-slate-400 hover:bg-slate-800 hover:text-white" title="Inventory">
                 <i class="fa-solid fa-boxes-stacked w-5"></i>
                 <span class="sidebar-text">Inventory</span>
             </a>
+            {% endif %}
+
+            <!-- Restaurant Menu (chef, waiter, management) -->
+            {% if user.role in 'super_admin,owner,manager,chef,waiter' %}
             <a href="{% url 'restaurant_menu' %}" class="sidebar-link flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm text-slate-400 hover:bg-slate-800 hover:text-white" title="Restaurant Menu">
                 <i class="fa-solid fa-utensils w-5"></i>
                 <span class="sidebar-text">Restaurant Menu</span>
             </a>
+            {% endif %}
+
+            <!-- Kitchen Display -->
+            {% if user.role in 'super_admin,owner,manager,chef' %}
             <a href="{% url 'kds_dashboard' %}" class="sidebar-link flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm text-slate-400 hover:bg-slate-800 hover:text-white" title="Kitchen Display">
                 <i class="fa-solid fa-display w-5"></i>
                 <span class="sidebar-text">Kitchen Display</span>
             </a>
+            {% endif %}
+
+            <!-- Accounting -->
+            {% if user.role in 'super_admin,owner,manager,accountant' %}
             <a href="{% url 'profit_loss' %}" class="sidebar-link flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm text-slate-400 hover:bg-slate-800 hover:text-white" title="Accounting">
                 <i class="fa-solid fa-chart-line w-5"></i>
                 <span class="sidebar-text">Accounting</span>
             </a>
+            {% endif %}
 
             <!-- Operations -->
             <div class="sidebar-text text-xs font-semibold text-slate-500 uppercase tracking-wider px-3 pt-4 pb-1">Operations</div>
+
+            <!-- Housekeeping -->
+            {% if user.role in 'super_admin,owner,manager,housekeeping' %}
             <a href="{% url 'housekeeping_tasks' %}" class="sidebar-link flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm text-slate-400 hover:bg-slate-800 hover:text-white" title="Housekeeping">
                 <i class="fa-solid fa-broom w-5"></i>
                 <span class="sidebar-text">Housekeeping</span>
             </a>
+            {% endif %}
+
+            <!-- Staff & HR -->
+            {% if user.role in 'super_admin,owner,manager' %}
             <a href="{% url 'hr_dashboard' %}" class="sidebar-link flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm text-slate-400 hover:bg-slate-800 hover:text-white" title="Staff & HR">
                 <i class="fa-solid fa-user-tie w-5"></i>
                 <span class="sidebar-text">Staff & HR</span>
             </a>
+            {% endif %}
+
+            <!-- Operations Chat – all staff except guest -->
+            {% if user.role not in 'guest' %}
             <a href="{% url 'chat' %}" class="sidebar-link flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm text-slate-400 hover:bg-slate-800 hover:text-white" title="Operations Chat">
                 <i class="fa-solid fa-message w-5"></i>
                 <span class="sidebar-text">Operations Chat</span>
             </a>
+            {% endif %}
+
+            <!-- Reports & Analytics -->
+            {% if user.role in 'super_admin,owner,manager,accountant' %}
             <a href="{% url 'analytics' %}" class="sidebar-link flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm text-slate-400 hover:bg-slate-800 hover:text-white" title="Reports & Analytics">
                 <i class="fa-solid fa-magnifying-glass-chart w-5"></i>
                 <span class="sidebar-text">Reports & Analytics</span>
             </a>
+            {% endif %}
 
-            <!-- Control Center -->
+            <!-- Control Center – visible to everyone -->
             <div class="sidebar-text text-xs font-semibold text-slate-500 uppercase tracking-wider px-3 pt-4 pb-1">Control Center</div>
             <a href="{% url 'notifications_list' %}" class="sidebar-link flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm text-slate-400 hover:bg-slate-800 hover:text-white">
                 <i class="fa-solid fa-bell w-5"></i>
@@ -119,25 +166,22 @@
         </nav>
     </aside>
 
-    <!-- FLOATING RESTORE BUTTON (appears when sidebar is completely hidden) -->
+    <!-- FLOATING RESTORE BUTTON -->
     <button id="floatingSidebarToggle" class="hidden fixed top-4 left-4 z-40 bg-primary hover:bg-primaryDark text-white p-2 rounded-lg shadow-lg transition md:flex items-center justify-center" title="Show Sidebar">
         <i class="fa-solid fa-bars text-xl" id="floatingSidebarIcon"></i>
     </button>
 
     <!-- MAIN CONTENT -->
     <main class="flex-1 flex flex-col overflow-hidden w-full">
-        <!-- HEADER (toggle button and search bar close together – unchanged) -->
+        <!-- HEADER -->
         <header class="h-16 bg-white/90 backdrop-blur-md border-b border-slate-200 flex items-center justify-between px-4 sm:px-6 z-10 shrink-0 shadow-sm">
             <div class="flex items-center space-x-1">
-                <!-- DESKTOP SIDEBAR TOGGLE – smaller -->
                 <button id="headerSidebarToggle" class="hidden md:flex items-center justify-center p-1.5 rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition" title="Toggle Sidebar">
                     <i class="fa-solid fa-bars text-lg"></i>
                 </button>
-                <!-- MOBILE SIDEBAR TOGGLE -->
                 <button class="md:hidden text-slate-600" onclick="openSidebar()">
                     <i class="fa-solid fa-bars text-xl"></i>
                 </button>
-                <!-- Search bar -->
                 <div class="relative flex-1 max-w-md">
                     <input type="text" id="headerSearch" placeholder="Search..." class="w-full bg-slate-50 text-sm pl-9 pr-10 py-2 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition">
                     <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
@@ -147,10 +191,13 @@
                 </div>
             </div>
             <div class="flex items-center space-x-2 sm:space-x-4">
+                <!-- Only show Add Booking to roles that can create reservations -->
+                {% if user.role in 'super_admin,owner,manager,receptionist' %}
                 <button id="openAddBookingModal" class="bg-primary hover:bg-primaryDark text-white px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold shadow-sm transition flex items-center space-x-1">
                     <i class="fa-solid fa-plus"></i> <span class="hidden sm:inline">Add Booking</span>
                 </button>
                 <div class="w-px h-6 bg-slate-200"></div>
+                {% endif %}
 
                 <button id="notificationBell" class="text-slate-500 hover:text-slate-700 transition relative p-1">
                     <i class="fa-solid fa-bell text-lg"></i>
@@ -219,7 +266,6 @@
         </header>
 
         <div id="toastContainer"></div>
-
         <div id="offlineAlert" class="hidden fixed bottom-4 right-4 bg-amber-100 text-amber-800 px-4 py-2 rounded shadow text-sm">
             You are offline. Changes will be synced when connection returns.
         </div>
@@ -229,6 +275,8 @@
         </div>
     </main>
 
+    <!-- Add Booking Modal (only rendered for allowed roles) -->
+    {% if user.role in 'super_admin,owner,manager,receptionist' %}
     <div id="addBookingModal" class="fixed inset-0 z-50 flex items-center justify-center hidden bg-black/50 backdrop-blur-sm">
         <div class="glass-card w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto animate__animated animate__zoomIn">
             <div class="flex justify-between items-center mb-4">
@@ -296,6 +344,7 @@
             </form>
         </div>
     </div>
+    {% endif %}
 
     <div id="slidePanel" class="fixed top-0 right-0 h-full w-80 max-w-[90vw] bg-gradient-to-b from-white to-slate-50 dark:from-slate-800 dark:to-slate-900 backdrop-blur-lg shadow-2xl z-50 transform translate-x-full transition-transform duration-300 ease-in-out flex flex-col border-l border-slate-200/60 dark:border-slate-700/60">
         <div class="p-5 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center bg-white/60 dark:bg-slate-800/60 backdrop-blur">
@@ -356,7 +405,7 @@
             document.getElementById('sidebarOverlay').classList.add('hidden');
         }
 
-        // Sidebar toggle (both header button and floating button)
+        // Sidebar toggle
         const sidebar = document.getElementById('sidebar');
         const floatingBtn = document.getElementById('floatingSidebarToggle');
         const headerToggle = document.getElementById('headerSidebarToggle');
@@ -375,12 +424,8 @@
             }
         }
 
-        if (headerToggle) {
-            headerToggle.addEventListener('click', toggleSidebar);
-        }
-        if (floatingBtn) {
-            floatingBtn.addEventListener('click', toggleSidebar);
-        }
+        if (headerToggle) headerToggle.addEventListener('click', toggleSidebar);
+        if (floatingBtn) floatingBtn.addEventListener('click', toggleSidebar);
 
         // Search
         const searchBtn = document.getElementById('searchButton');

@@ -6,9 +6,10 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .models import MenuItem, Table, Order
 from .serializers import MenuItemSerializer, TableSerializer, OrderSerializer
 from .forms import MenuItemForm
-from apps.accounts.permissions import role_required
+from apps.accounts.permissions import role_required   # centralised decorator
 
 
+# =================== REST VIEWSETS ===================
 class MenuItemViewSet(viewsets.ModelViewSet):
     queryset = MenuItem.objects.all()
     serializer_class = MenuItemSerializer
@@ -24,6 +25,7 @@ class OrderViewSet(viewsets.ModelViewSet):
     serializer_class = OrderSerializer
 
 
+# =================== PUBLIC / INTERNAL MENU ===================
 def menu_view(request):
     """Public / internal menu view – switches base template based on user."""
     items = MenuItem.objects.filter(available=True)
@@ -45,6 +47,7 @@ def waiter_order(request):
     return render(request, 'restaurant/waiter_order.html')
 
 
+# =================== STAFF MENU MANAGEMENT ===================
 @login_required
 @role_required(['super_admin', 'owner', 'manager', 'chef'])
 def menu_item_add(request):

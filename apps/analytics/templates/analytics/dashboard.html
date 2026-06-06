@@ -92,15 +92,15 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div class="p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl">
                         <p class="text-xs text-slate-500 uppercase">Gross Revenue</p>
-                        <h3 class="text-2xl font-bold text-emerald-600">₹{{ total_revenue|floatformat:0 }}</h3>
+                        <h3 class="text-2xl font-bold text-emerald-600">KSH{{ total_revenue|floatformat:0 }}</h3>
                     </div>
                     <div class="p-4 bg-rose-50 dark:bg-rose-900/20 rounded-xl">
                         <p class="text-xs text-slate-500 uppercase">Total Expenses</p>
-                        <h3 class="text-2xl font-bold text-rose-600">₹{{ expenses_period|floatformat:0 }}</h3>
+                        <h3 class="text-2xl font-bold text-rose-600">KSH{{ expenses_period|floatformat:0 }}</h3>
                     </div>
                     <div class="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
                         <p class="text-xs text-slate-500 uppercase">Net Profit</p>
-                        <h3 class="text-2xl font-bold text-blue-600">₹{{ profit_period|floatformat:0 }}</h3>
+                        <h3 class="text-2xl font-bold text-blue-600">KSH{{ profit_period|floatformat:0 }}</h3>
                     </div>
                 </div>
             </div>
@@ -118,16 +118,16 @@
                 <div class="grid grid-cols-2 gap-4">
                     <div class="p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl">
                         <p class="text-xs uppercase text-slate-500">Assets</p>
-                        <h3 class="text-2xl font-bold">₹{{ total_assets }}</h3>
+                        <h3 class="text-2xl font-bold">KSH{{ total_assets }}</h3>
                     </div>
                     <div class="p-4 bg-rose-50 dark:bg-rose-900/20 rounded-xl">
                         <p class="text-xs uppercase text-slate-500">Liabilities</p>
-                        <h3 class="text-2xl font-bold">₹{{ total_liabilities }}</h3>
+                        <h3 class="text-2xl font-bold">KSH{{ total_liabilities }}</h3>
                     </div>
                 </div>
                 <div class="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl text-center">
                     <p class="text-xs uppercase text-slate-500">Owner's Equity</p>
-                    <h3 class="text-xl font-bold">₹{{ equity }}</h3>
+                    <h3 class="text-xl font-bold">KSH{{ equity }}</h3>
                 </div>
             </div>
         </div>
@@ -144,16 +144,16 @@
                 <div class="grid grid-cols-2 gap-4">
                     <div class="p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl">
                         <p class="text-xs uppercase text-slate-500">Money In</p>
-                        <h3 class="text-2xl font-bold text-emerald-600">₹{{ cash_in|floatformat:0 }}</h3>
+                        <h3 class="text-2xl font-bold text-emerald-600">KSH{{ cash_in|floatformat:0 }}</h3>
                     </div>
                     <div class="p-4 bg-rose-50 dark:bg-rose-900/20 rounded-xl">
                         <p class="text-xs uppercase text-slate-500">Money Out</p>
-                        <h3 class="text-2xl font-bold text-rose-600">₹{{ cash_out|floatformat:0 }}</h3>
+                        <h3 class="text-2xl font-bold text-rose-600">KSH{{ cash_out|floatformat:0 }}</h3>
                     </div>
                 </div>
                 <div class="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl text-center">
                     <p class="text-xs uppercase text-slate-500">Net Cash Flow</p>
-                    <h3 class="text-xl font-bold">₹{{ net_cash_flow|floatformat:0 }}</h3>
+                    <h3 class="text-xl font-bold">KSH{{ net_cash_flow|floatformat:0 }}</h3>
                 </div>
             </div>
         </div>
@@ -170,10 +170,10 @@
                 <table class="w-full text-sm">
                     <thead><tr class="border-b"><th class="pb-2 text-left">Source</th><th class="pb-2 text-right">Amount</th></tr></thead>
                     <tbody>
-                        <tr><td class="py-2">Room Bookings</td><td class="py-2 text-right font-semibold">₹{{ room_sales|floatformat:0 }}</td></tr>
-                        <tr><td class="py-2">Restaurant & Dining</td><td class="py-2 text-right font-semibold">₹{{ restaurant_sales|floatformat:0 }}</td></tr>
-                        <tr><td class="py-2">Other Income</td><td class="py-2 text-right font-semibold">₹{{ other_income|floatformat:0 }}</td></tr>
-                        <tr class="font-bold"><td class="py-2">Total Sales</td><td class="py-2 text-right">₹{{ total_sales|floatformat:0 }}</td></tr>
+                        <tr><td class="py-2">Room Bookings</td><td class="py-2 text-right font-semibold">KSH{{ room_sales|floatformat:0 }}</td></tr>
+                        <tr><td class="py-2">Restaurant & Dining</td><td class="py-2 text-right font-semibold">KSH{{ restaurant_sales|floatformat:0 }}</td></tr>
+                        <tr><td class="py-2">Other Income</td><td class="py-2 text-right font-semibold">KSH{{ other_income|floatformat:0 }}</td></tr>
+                        <tr class="font-bold"><td class="py-2">Total Sales</td><td class="py-2 text-right">KSH{{ total_sales|floatformat:0 }}</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -218,7 +218,7 @@
                     <li class="flex items-center justify-between text-sm">
                         <span class="font-medium">{{ prod.name }}</span>
                         <span class="text-slate-500">{{ prod.sales }} sold</span>
-                        <span class="font-bold text-emerald-600">₹{{ prod.revenue }}</span>
+                        <span class="font-bold text-emerald-600">KSH{{ prod.revenue }}</span>
                     </li>
                     {% endfor %}
                 </ul>
@@ -238,7 +238,7 @@
                     {% for branch in branches %}
                     <div class="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl">
                         <h3 class="font-bold">{{ branch.name }}</h3>
-                        <p class="text-sm text-slate-500">Revenue: ₹{{ branch.revenue|floatformat:0 }}</p>
+                        <p class="text-sm text-slate-500">Revenue: KSH{{ branch.revenue|floatformat:0 }}</p>
                     </div>
                     {% empty %}
                     <p class="text-sm text-slate-500">No branches configured.</p>
@@ -260,7 +260,7 @@
                     <thead><tr class="border-b"><th class="pb-2 text-left">Category</th><th class="pb-2 text-right">Amount</th></tr></thead>
                     <tbody>
                         {% for exp in expenses_by_category %}
-                        <tr><td class="py-2">{{ exp.category|default:"General" }}</td><td class="py-2 text-right font-semibold">₹{{ exp.total|floatformat:0 }}</td></tr>
+                        <tr><td class="py-2">{{ exp.category|default:"General" }}</td><td class="py-2 text-right font-semibold">KSH{{ exp.total|floatformat:0 }}</td></tr>
                         {% empty %}
                         <tr><td colspan="2" class="py-2 text-slate-500">No expenses recorded.</td></tr>
                         {% endfor %}
@@ -295,7 +295,7 @@
                     {% for guest in top_guests %}
                     <li class="flex justify-between items-center p-2 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
                         <span>{{ guest.guest__first_name }} {{ guest.guest__last_name }} ({{ guest.guest__email }})</span>
-                        <span class="font-bold text-emerald-600">₹{{ guest.total_spent|floatformat:0 }}</span>
+                        <span class="font-bold text-emerald-600">KSH{{ guest.total_spent|floatformat:0 }}</span>
                     </li>
                     {% empty %}
                     <li class="text-sm text-slate-500">No guest data available for this period.</li>
@@ -315,7 +315,7 @@
                 </div>
                 <div class="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl text-center">
                     <p class="text-xs uppercase text-slate-500">Total Tax / VAT Collected</p>
-                    <h3 class="text-2xl font-bold text-blue-600">₹{{ tax_collected|floatformat:0 }}</h3>
+                    <h3 class="text-2xl font-bold text-blue-600">KSH{{ tax_collected|floatformat:0 }}</h3>
                 </div>
             </div>
         </div>
@@ -359,7 +359,7 @@
                 labels: trendLabels,
                 datasets: [
                     {
-                        label: 'Revenue (₹)',
+                        label: 'Revenue (KSH)',
                         data: trendRevenue,
                         borderColor: '#f97316',
                         backgroundColor: 'rgba(249,115,22,0.1)',
@@ -367,7 +367,7 @@
                         fill: true
                     },
                     {
-                        label: 'Expenses (₹)',
+                        label: 'Expenses (KSH)',
                         data: trendExpenses,
                         borderColor: '#ef4444',
                         backgroundColor: 'rgba(239,68,68,0.1)',

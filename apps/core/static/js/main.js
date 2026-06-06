@@ -238,7 +238,7 @@ document.addEventListener('DOMContentLoaded', () => {
           setText('checkinsCount', data.checkins);
           setText('checkoutsCount', data.checkouts);
           setText('occupancyRate', data.occupancy + '%');
-          setText('revenueMonth', '₹' + data.revenue);
+          setText('revenueMonth', 'KSH' + data.revenue);
         })
         .catch(() => {});
     }, 60000);

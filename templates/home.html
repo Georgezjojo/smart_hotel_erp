@@ -86,7 +86,7 @@
                 <h3 class="font-bold text-xl mb-2">{{ room_type.name }}</h3>
                 <p class="text-slate-500 text-sm mb-4">Up to {{ room_type.max_occupancy }} guests • Free Wi‑Fi • Room service</p>
                 <div class="flex items-center justify-between">
-                    <span class="text-2xl font-bold text-primary">₹{{ room_type.base_rate }}<span class="text-sm text-slate-400 font-normal">/night</span></span>
+                    <span class="text-2xl font-bold text-primary">KSH{{ room_type.base_rate }}<span class="text-sm text-slate-400 font-normal">/night</span></span>
                     <a href="{% url 'room_list_public' %}" class="bg-primary hover:bg-primaryDark text-white px-4 py-2 rounded-lg text-sm font-semibold transition">Book Now</a>
                 </div>
             </div>

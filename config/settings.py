@@ -30,7 +30,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'whitenoise.runserver_nostatic',        # WhiteNoise (disable Django's static)
+    'whitenoise.runserver_nostatic',        # WhiteNoise
     'rest_framework',
     'corsheaders',
     'channels',
@@ -59,13 +59,14 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',   # right after security
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    # 'apps.accounts.middleware.ForcePasswordChangeMiddleware',   # disabled – no more forced change
+    'apps.core.middleware.RedirectAuthenticatedUsersMiddleware',   # 👈 new redirect middleware
+    # 'apps.accounts.middleware.ForcePasswordChangeMiddleware',   # disabled
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -93,7 +94,6 @@ WSGI_APPLICATION = 'config.wsgi.application'
 ASGI_APPLICATION = 'config.asgi.application'
 
 # ================== DATABASE ==================
-# Railway provides DATABASE_URL (postgres://...) – env.db() parses it correctly
 DATABASES = {
     'default': env.db('DATABASE_URL', default='mysql://root@localhost:3306/hotel_erp')
 }
@@ -120,6 +120,10 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
+# ================== LOGIN REDIRECT ==================
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'dashboard'
+
 # ================== REST FRAMEWORK ==================
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -143,7 +147,6 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'apps/core/static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# WhiteNoise – compressed static files with cache busting
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 MEDIA_URL = '/media/'

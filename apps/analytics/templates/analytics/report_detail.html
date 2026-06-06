@@ -18,12 +18,12 @@
                         {% for entry in income_items %}
                         <tr class="border-b border-slate-100">
                             <td class="py-2">{{ entry.description }}</td>
-                            <td class="py-2 text-right">₹{{ entry.amount|floatformat:2 }}</td>
+                            <td class="py-2 text-right">KSH{{ entry.amount|floatformat:2 }}</td>
                         </tr>
                         {% empty %}
                         <tr><td colspan="2" class="py-2 text-slate-500">No income entries.</td></tr>
                         {% endfor %}
-                        <tr class="font-bold"><td class="py-2">Total Income</td><td class="py-2 text-right">₹{{ total_income|floatformat:2 }}</td></tr>
+                        <tr class="font-bold"><td class="py-2">Total Income</td><td class="py-2 text-right">KSH{{ total_income|floatformat:2 }}</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -35,18 +35,18 @@
                         {% for entry in expense_items %}
                         <tr class="border-b border-slate-100">
                             <td class="py-2">{{ entry.description }}</td>
-                            <td class="py-2 text-right">₹{{ entry.amount|floatformat:2 }}</td>
+                            <td class="py-2 text-right">KSH{{ entry.amount|floatformat:2 }}</td>
                         </tr>
                         {% empty %}
                         <tr><td colspan="2" class="py-2 text-slate-500">No expense entries.</td></tr>
                         {% endfor %}
-                        <tr class="font-bold"><td class="py-2">Total Expenses</td><td class="py-2 text-right">₹{{ total_expenses|floatformat:2 }}</td></tr>
+                        <tr class="font-bold"><td class="py-2">Total Expenses</td><td class="py-2 text-right">KSH{{ total_expenses|floatformat:2 }}</td></tr>
                     </tbody>
                 </table>
             </div>
         </div>
         <div class="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl text-center">
-            <h3 class="text-xl font-bold">Net Profit = ₹{{ total_income|floatformat:2 }} - ₹{{ total_expenses|floatformat:2 }} = <span class="text-blue-600">₹{{ profit|floatformat:2 }}</span></h3>
+            <h3 class="text-xl font-bold">Net Profit = KSH{{ total_income|floatformat:2 }} - KSH{{ total_expenses|floatformat:2 }} = <span class="text-blue-600">KSH{{ profit|floatformat:2 }}</span></h3>
         </div>
     {% elif report == 'balance_sheet' %}
         <!-- similar structure with assets and liabilities list -->

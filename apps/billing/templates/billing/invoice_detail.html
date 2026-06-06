@@ -48,39 +48,39 @@
                 <tr>
                     <td class="py-3 font-medium">Accommodation - Room {{ invoice.reservation.room.room_number }}</td>
                     <td class="py-3 text-center">{{ invoice.reservation.check_out|timeuntil:invoice.reservation.check_in }}</td>
-                    <td class="py-3 text-right">₹{{ invoice.reservation.room.room_type.base_rate }}</td>
-                    <td class="py-3 text-right font-semibold">₹{{ invoice.subtotal }}</td>
+                    <td class="py-3 text-right">KSH{{ invoice.reservation.room.room_type.base_rate }}</td>
+                    <td class="py-3 text-right font-semibold">KSH{{ invoice.subtotal }}</td>
                 </tr>
                 <tr>
                     <td class="py-3 font-medium">Luxury Tax (12%)</td>
                     <td class="py-3 text-center">-</td>
                     <td class="py-3 text-right">-</td>
-                    <td class="py-3 text-right font-semibold">₹{{ invoice.tax }}</td>
+                    <td class="py-3 text-right font-semibold">KSH{{ invoice.tax }}</td>
                 </tr>
                 <tr>
                     <td class="py-3 font-medium">Service Charge (5%)</td>
                     <td class="py-3 text-center">-</td>
                     <td class="py-3 text-right">-</td>
-                    <td class="py-3 text-right font-semibold">₹{{ invoice.service_charge }}</td>
+                    <td class="py-3 text-right font-semibold">KSH{{ invoice.service_charge }}</td>
                 </tr>
             </tbody>
         </table>
         <div class="border-t border-slate-200 pt-4 w-64 ml-auto text-xs space-y-2">
             <div class="flex justify-between text-slate-500">
                 <span>Subtotal</span>
-                <span class="font-medium">₹{{ invoice.subtotal }}</span>
+                <span class="font-medium">KSH{{ invoice.subtotal }}</span>
             </div>
             <div class="flex justify-between text-slate-500">
                 <span>Tax</span>
-                <span class="font-medium">₹{{ invoice.tax }}</span>
+                <span class="font-medium">KSH{{ invoice.tax }}</span>
             </div>
             <div class="flex justify-between text-slate-500">
                 <span>Service Charge</span>
-                <span class="font-medium">₹{{ invoice.service_charge }}</span>
+                <span class="font-medium">KSH{{ invoice.service_charge }}</span>
             </div>
             <div class="flex justify-between text-slate-800 text-sm font-bold pt-2 border-t border-slate-100">
                 <span>Total Amount Due</span>
-                <span class="text-primary">₹{{ invoice.total }}</span>
+                <span class="text-primary">KSH{{ invoice.total }}</span>
             </div>
         </div>
     </div>

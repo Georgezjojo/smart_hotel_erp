@@ -12,21 +12,21 @@
         <div class="p-3 bg-emerald-50 text-emerald-600 rounded-xl"><i class="fa-solid fa-arrow-trend-up text-xl"></i></div>
         <div>
             <p class="text-xs text-slate-400 uppercase">Total Income</p>
-            <h3 class="text-2xl font-bold text-emerald-600">₹{{ total_income|floatformat:0 }}</h3>
+            <h3 class="text-2xl font-bold text-emerald-600">KSH{{ total_income|floatformat:0 }}</h3>
         </div>
     </div>
     <div class="glass-card p-4 flex items-center space-x-4">
         <div class="p-3 bg-rose-50 text-rose-600 rounded-xl"><i class="fa-solid fa-arrow-trend-down text-xl"></i></div>
         <div>
             <p class="text-xs text-slate-400 uppercase">Total Expenses</p>
-            <h3 class="text-2xl font-bold text-rose-600">₹{{ total_expenses|floatformat:0 }}</h3>
+            <h3 class="text-2xl font-bold text-rose-600">KSH{{ total_expenses|floatformat:0 }}</h3>
         </div>
     </div>
     <div class="glass-card p-4 flex items-center space-x-4">
         <div class="p-3 bg-blue-50 text-blue-600 rounded-xl"><i class="fa-solid fa-wallet text-xl"></i></div>
         <div>
             <p class="text-xs text-slate-400 uppercase">Net Profit</p>
-            <h3 class="text-2xl font-bold {% if profit >= 0 %}text-blue-600{% else %}text-rose-600{% endif %}">₹{{ profit|floatformat:0 }}</h3>
+            <h3 class="text-2xl font-bold {% if profit >= 0 %}text-blue-600{% else %}text-rose-600{% endif %}">KSH{{ profit|floatformat:0 }}</h3>
         </div>
     </div>
 </div>
@@ -66,7 +66,7 @@
                     </td>
                     <td class="p-3 text-right font-bold
                         {% if entry.entry_type == 'income' %}text-emerald-600{% else %}text-rose-600{% endif %}">
-                        {% if entry.entry_type == 'income' %}+{% else %}-{% endif %} ₹{{ entry.amount|floatformat:2 }}
+                        {% if entry.entry_type == 'income' %}+{% else %}-{% endif %} KSH{{ entry.amount|floatformat:2 }}
                     </td>
                 </tr>
                 {% empty %}

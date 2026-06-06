@@ -33,7 +33,7 @@
         <div class="p-3 bg-indigo-50 text-indigo-600 rounded-xl"><i class="fa-solid fa-indian-rupee-sign text-xl"></i></div>
         <div>
             <p class="text-xs text-slate-400 uppercase">Revenue (Month)</p>
-            <h3 class="text-2xl font-bold" id="revenueMonth">₹{{ revenue }}</h3>
+            <h3 class="text-2xl font-bold" id="revenueMonth">KSH{{ revenue }}</h3>
         </div>
     </a>
 </div>
@@ -57,7 +57,7 @@
                     </div>
                 {% endif %}
                 <p class="font-semibold text-sm">{{ item.name }}</p>
-                <p class="text-xs text-primary font-bold">₹{{ item.price }}</p>
+                <p class="text-xs text-primary font-bold">KSH{{ item.price }}</p>
             </a>
             {% empty %}
             <p class="text-sm text-slate-500 col-span-full">No specials today. Check our full menu.</p>
@@ -156,11 +156,11 @@
             <span>Operational Cost</span>
         </h3>
         <div class="space-y-1.5 text-xs">
-            <div class="flex justify-between"><span>Salaries</span><span class="font-bold">₹15,000 (50%)</span></div>
+            <div class="flex justify-between"><span>Salaries</span><span class="font-bold">KSH15,000 (50%)</span></div>
             <div class="w-full bg-slate-100 dark:bg-slate-700 h-1.5 rounded-full"><div class="bg-primary h-full rounded-full" style="width:50%"></div></div>
-            <div class="flex justify-between"><span>Utilities</span><span class="font-bold">₹5,000 (16.6%)</span></div>
+            <div class="flex justify-between"><span>Utilities</span><span class="font-bold">KSH5,000 (16.6%)</span></div>
             <div class="w-full bg-slate-100 dark:bg-slate-700 h-1.5 rounded-full"><div class="bg-amber-500 h-full rounded-full" style="width:16.6%"></div></div>
-            <div class="flex justify-between"><span>Maintenance</span><span class="font-bold">₹4,000 (13.3%)</span></div>
+            <div class="flex justify-between"><span>Maintenance</span><span class="font-bold">KSH4,000 (13.3%)</span></div>
             <div class="w-full bg-slate-100 dark:bg-slate-700 h-1.5 rounded-full"><div class="bg-blue-500 h-full rounded-full" style="width:13.3%"></div></div>
         </div>
     </a>

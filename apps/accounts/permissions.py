@@ -1,20 +1,19 @@
-from django.core.exceptions import PermissionDenied
+from django.contrib import messages
 from django.shortcuts import redirect
 from functools import wraps
 
-
-def role_required(allowed_roles):
+def role_required(allowed_roles=[]):
     """
-    Decorator that checks if the user is authenticated and has one of the allowed roles.
-    Redirects to login if not authenticated, raises PermissionDenied otherwise.
+    Decorator that checks if the user has one of the allowed roles.
+    If not, shows an error message and redirects to the dashboard.
+    Use together with @login_required.
     """
     def decorator(view_func):
         @wraps(view_func)
-        def _wrapped_view(request, *args, **kwargs):
-            if not request.user.is_authenticated:
-                return redirect('login')
+        def wrapper(request, *args, **kwargs):
             if request.user.role not in allowed_roles:
-                raise PermissionDenied
+                messages.error(request, "You don't have access to that page.")
+                return redirect('dashboard')
             return view_func(request, *args, **kwargs)
-        return _wrapped_view
+        return wrapper
     return decorator
