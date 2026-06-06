@@ -5,9 +5,9 @@ ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app
 
-# Install system dependencies for psycopg2 (PostgreSQL) and Pillow
+# Install system dependencies for mysqlclient and Pillow
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential libpq-dev \
+    build-essential default-libmysqlclient-dev pkg-config \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
@@ -15,7 +15,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-# Collect static files – uses the dummy database and secret key
+# Collect static files (uses default env vars)
 RUN python manage.py collectstatic --noinput
 
 EXPOSE 8000

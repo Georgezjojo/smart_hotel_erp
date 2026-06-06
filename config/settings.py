@@ -30,7 +30,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'whitenoise.runserver_nostatic',        # <-- added for WhiteNoise
+    'whitenoise.runserver_nostatic',        # WhiteNoise
     'rest_framework',
     'corsheaders',
     'channels',
@@ -59,7 +59,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',   # <-- added right after security
+    'whitenoise.middleware.WhiteNoiseMiddleware',   # right after security
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -94,16 +94,17 @@ ASGI_APPLICATION = 'config.asgi.application'
 
 # ================== DATABASE ==================
 DATABASES = {
-    'default': env.db('DATABASE_URL', default='sqlite:///db.sqlite3')   # dummy for build; real PostgreSQL URL comes from Railway env
-
+    'default': env.db('DATABASE_URL', default='mysql://root@localhost:3306/hotel_erp')
 }
 
 # ================== REDIS / CHANNELS ==================
+REDIS_URL = env('REDIS_URL', default='redis://localhost:6379')
+
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            "hosts": [env('REDIS_URL')],
+            "hosts": [REDIS_URL],
         },
     },
 }
