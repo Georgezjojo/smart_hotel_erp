@@ -7,9 +7,7 @@ from apps.reservations.models import Reservation
 
 
 def home(request):
-    """Public landing page showing room types. If already logged in, go to dashboard."""
-    if request.user.is_authenticated:
-        return redirect('dashboard')
+    """Public landing page showing room types."""
     room_types = RoomType.objects.all()
     return render(request, 'home.html', {'room_types': room_types})
 
