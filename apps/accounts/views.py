@@ -13,10 +13,11 @@ def register_view(request):
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
-            user.must_change_password = True   # force password change on first login
+            user.must_change_password = True
             user.save()
-            login(request, user)
-            return redirect('dashboard')       # middleware will redirect to password change
+            # Do NOT log the user in – send them to login page instead
+            messages.success(request, 'Account created! Please login with your credentials.')
+            return redirect('login')
     else:
         form = CustomUserCreationForm()
     return render(request, 'accounts/register.html', {'form': form})

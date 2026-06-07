@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>{% block title %}Grand Horizon Hotel{% endblock %}</title>
+    <title>{% block title %}Grand Horizon{% endblock %}</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/auth.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
@@ -27,94 +28,63 @@
 </head>
 <body class="bg-slate-50 text-slate-800 flex flex-col min-h-screen">
 
-    <!-- PUBLIC NAVBAR -->
-    <nav class="sticky top-0 z-20 bg-white/80 backdrop-blur-md border-b border-slate-200 shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16 items-center">
-                <a href="{% url 'home' %}" class="flex items-center space-x-3">
-                    <div class="bg-gradient-to-br from-primary to-primaryDark text-white p-2 rounded-lg font-bold text-xl tracking-wider shadow-lg">GH</div>
-                    <span class="text-xl font-bold text-slate-800">Grand Horizon</span>
+    <!-- PUBLIC HEADER -->
+    <header class="bg-white/90 backdrop-blur-md border-b border-slate-200 shadow-sm sticky top-0 z-30">
+        <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+            <!-- Logo / Brand -->
+            <a href="{% url 'home' %}" class="flex items-center space-x-2 text-slate-800 hover:text-primary transition">
+                <span class="bg-primary text-white text-sm font-extrabold px-2.5 py-1.5 rounded-lg shadow-lg">GH</span>
+                <span class="text-lg font-bold hidden sm:inline">Grand Horizon</span>
+            </a>
+
+            <!-- Desktop navigation -->
+            <div class="hidden md:flex items-center space-x-3">
+                <a href="{% url 'login' %}" class="text-slate-600 hover:text-primary font-medium text-sm transition px-3 py-2 rounded-lg hover:bg-slate-100">
+                    Login
                 </a>
-                <!-- Desktop links -->
-                <div class="hidden md:flex items-center space-x-6">
-                    <a href="{% url 'home' %}" class="text-slate-600 hover:text-primary transition font-medium">Home</a>
-                    <a href="{% url 'room_list_public' %}" class="text-slate-600 hover:text-primary transition font-medium">Rooms</a>
-                    <a href="{% url 'restaurant_menu' %}" class="text-slate-600 hover:text-primary transition font-medium">Dining</a>
-                    <a href="{% url 'contact' %}" class="text-slate-600 hover:text-primary transition font-medium">Contact</a>
-                    {% if user.is_authenticated %}
-                        <div class="relative ml-3" id="userMenuButton">
-                            <button class="flex items-center space-x-2 text-slate-700 hover:text-primary transition">
-                                {% if user.profile_picture %}
-                                    <img src="{{ user.profile_picture.url }}" class="w-8 h-8 rounded-full object-cover border-2 border-primary">
-                                {% else %}
-                                    <div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm">{{ user.get_initials }}</div>
-                                {% endif %}
-                            </button>
-                            <div id="userDropdown" class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-slate-200 hidden text-sm z-50">
-                                <a href="{% url 'profile' %}" class="block px-4 py-2 hover:bg-slate-50 rounded-t-xl">My Profile</a>
-                                <a href="{% url 'password_change' %}" class="block px-4 py-2 hover:bg-slate-50">Change Password</a>
-                                <hr class="border-slate-100">
-                                <a href="#" onclick="document.getElementById('logoutForm').submit()" class="block px-4 py-2 hover:bg-rose-50 text-rose-600 rounded-b-xl">Logout</a>
-                            </div>
-                        </div>
-                    {% else %}
-                        <a href="{% url 'login' %}" class="bg-primary hover:bg-primaryDark text-white px-4 py-2 rounded-lg font-medium transition">Login</a>
-                    {% endif %}
-                </div>
-                <!-- Mobile hamburger -->
-                <div class="md:hidden flex items-center">
-                    <button id="mobileMenuButton" class="text-slate-600 focus:outline-none">
-                        <i class="fa-solid fa-bars text-2xl"></i>
-                    </button>
-                </div>
+                <a href="{% url 'register' %}" class="bg-primary hover:bg-primaryDark text-white px-4 py-2 rounded-lg text-sm font-semibold shadow-sm transition">
+                    Register
+                </a>
+            </div>
+
+            <!-- Mobile hamburger -->
+            <div class="md:hidden flex items-center">
+                <button id="mobileMenuButton" class="text-slate-600 focus:outline-none">
+                    <i class="fa-solid fa-bars text-2xl"></i>
+                </button>
             </div>
         </div>
+
         <!-- Mobile menu -->
         <div id="mobileMenu" class="hidden md:hidden bg-white/90 backdrop-blur-md border-t border-slate-200">
-            <a href="{% url 'home' %}" class="block px-4 py-2 text-slate-600 hover:bg-slate-50">Home</a>
-            <a href="{% url 'room_list_public' %}" class="block px-4 py-2 text-slate-600 hover:bg-slate-50">Rooms</a>
-            <a href="{% url 'restaurant_menu' %}" class="block px-4 py-2 text-slate-600 hover:bg-slate-50">Dining</a>
-            <a href="{% url 'contact' %}" class="block px-4 py-2 text-slate-600 hover:bg-slate-50">Contact</a>
-            {% if not user.is_authenticated %}
-                <a href="{% url 'login' %}" class="block px-4 py-2 text-primary font-semibold hover:bg-slate-50">Login / Register</a>
-            {% endif %}
+            <a href="{% url 'login' %}" class="block px-4 py-3 text-slate-600 hover:bg-slate-50 font-medium">Login</a>
+            <a href="{% url 'register' %}" class="block px-4 py-3 text-primary font-semibold hover:bg-slate-50">Register</a>
         </div>
-    </nav>
+    </header>
 
+    <!-- Main Content -->
     <main class="flex-1">
         {% block content %}{% endblock %}
     </main>
 
-    <footer class="bg-slate-900 text-slate-400 py-8 mt-12">
-        <div class="max-w-7xl mx-auto px-4 text-center text-sm">
-            <p>&copy; 2026 Grand Horizon Hotel. All rights reserved.</p>
-            <div class="mt-2 space-x-4">
-                <a href="{% url 'privacy' %}" class="hover:text-white transition">Privacy Policy</a>
-                <a href="{% url 'terms' %}" class="hover:text-white transition">Terms of Service</a>
-            </div>
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-6 mt-12">
+        <div class="max-w-7xl mx-auto px-4 text-center text-sm text-slate-500">
+            &copy; {% now "Y" %} Grand Horizon. All rights reserved.
         </div>
     </footer>
 
-    <form id="logoutForm" method="post" action="{% url 'logout' %}" class="hidden">{% csrf_token %}</form>
-
-    <!-- Scripts -->
-    <script src="{% static 'js/auth.js' %}"></script>
+    <!-- Simple script for mobile menu toggle -->
     <script>
         const mobileBtn = document.getElementById('mobileMenuButton');
         const mobileMenu = document.getElementById('mobileMenu');
         if (mobileBtn && mobileMenu) {
-            mobileBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
-        }
-        const userBtn = document.getElementById('userMenuButton');
-        const userDropdown = document.getElementById('userDropdown');
-        if (userBtn && userDropdown) {
-            userBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                userDropdown.classList.toggle('hidden');
+            mobileBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
             });
-            document.addEventListener('click', () => userDropdown.classList.add('hidden'));
         }
     </script>
+
     {% block extra_scripts %}{% endblock %}
 </body>
 </html>
