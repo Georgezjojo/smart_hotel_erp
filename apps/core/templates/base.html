@@ -275,6 +275,23 @@
 
         <div class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 custom-scrollbar">
             {% block content %}{% endblock %}
+
+            <!-- DASHBOARD FOOTER (visible on all logged‑in pages) -->
+            {% if user.is_authenticated %}
+            <footer class="bg-white/80 backdrop-blur-md border-t border-slate-200 py-3 mt-6">
+                <div class="max-w-full px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-2">
+                    <div class="flex items-center space-x-2">
+                        <span class="bg-primary text-white text-[10px] font-extrabold px-1.5 py-0.5 rounded-md shadow">GH</span>
+                        <span class="font-medium text-slate-600">Grand Horizon ERP</span>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <a href="{% url 'contact' %}" class="hover:text-primary transition">Contact</a>
+                        <a href="{% url 'terms' %}" class="hover:text-primary transition">Terms</a>
+                        <a href="{% url 'privacy' %}" class="hover:text-primary transition">Privacy</a>
+                    </div>
+                </div>
+            </footer>
+            {% endif %}
         </div>
     </main>
 
