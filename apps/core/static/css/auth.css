@@ -1,11 +1,219 @@
+/* ============================================
+   AUTHENTICATION PAGES (login, register, etc.)
+   ============================================ */
+
+/* ---------- BASE ---------- */
 body {
     font-family: 'Inter', sans-serif;
+    background: #f8fafc; /* fallback for very old browsers */
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
 }
+
+/* ---------- GLASS CARD ---------- */
 .glass-card {
-    background: rgba(255, 255, 255, 0.65);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 1rem;
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 1.5rem;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 440px;
+    margin: auto;
+    transition: all 0.3s ease;
+}
+
+/* Dark mode override for glass card */
+.dark .glass-card {
+    background: rgba(30, 41, 59, 0.8);
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+}
+
+/* ---------- HEADINGS ---------- */
+.auth-heading {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 0.5rem;
+    text-align: center;
+}
+
+.dark .auth-heading {
+    color: #f1f5f9;
+}
+
+.auth-subtitle {
+    color: #64748b;
+    font-size: 0.95rem;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+/* ---------- FORM ELEMENTS ---------- */
+.auth-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.75rem;
+    background: white;
+    font-size: 0.95rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-sizing: border-box;
+}
+
+.auth-input:focus {
+    outline: none;
+    border-color: #f97316;
+    box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.2);
+}
+
+.dark .auth-input {
+    background: #1e293b;
+    border-color: #334155;
+    color: #f1f5f9;
+}
+
+.dark .auth-input:focus {
+    border-color: #f97316;
+    box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.4);
+}
+
+.auth-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #475569;
+    margin-bottom: 0.3rem;
+    display: block;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.dark .auth-label {
+    color: #cbd5e1;
+}
+
+/* ---------- BUTTONS ---------- */
+.auth-btn {
+    width: 100%;
+    padding: 0.85rem 1.5rem;
+    background: #f97316;
+    color: white;
+    font-weight: 600;
+    font-size: 1rem;
+    border: none;
+    border-radius: 0.75rem;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    margin-top: 1rem;
+}
+
+.auth-btn:hover {
+    background: #ea580c;
+}
+
+.auth-btn:active {
+    transform: scale(0.98);
+}
+
+.auth-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.dark .auth-btn {
+    background: #f97316;
+    color: white;
+}
+
+/* ---------- SECONDARY LINKS ---------- */
+.auth-link {
+    color: #f97316;
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.auth-link:hover {
+    color: #ea580c;
+    text-decoration: underline;
+}
+
+.dark .auth-link {
+    color: #f97316;
+}
+
+/* ---------- ERROR / MESSAGE BOXES ---------- */
+.auth-error {
+    background: #fee2e2;
+    color: #b91c1c;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.dark .auth-error {
+    background: #7f1d1d;
+    color: #fecaca;
+}
+
+.auth-success {
+    background: #dcfce7;
+    color: #166534;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.dark .auth-success {
+    background: #14532d;
+    color: #bbf7d0;
+}
+
+/* ---------- PASSWORD STRENGTH METER ---------- */
+#strengthMeter {
+    height: 6px;
+    width: 0%;
+    background: #cbd5e1;
+    transition: width 0.3s, background 0.3s;
+    margin-top: 4px;
+    border-radius: 3px;
+}
+
+.strength-text {
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+}
+
+/* ---------- RESPONSIVE ADJUSTMENTS ---------- */
+@media (max-width: 640px) {
+    body {
+        padding: 0.5rem;
+        align-items: flex-start; /* don't vertically center on very small screens to avoid cut-off */
+    }
+
+    .glass-card {
+        padding: 1.5rem 1.2rem;
+        max-width: 100%;
+        border-radius: 1rem;
+    }
+
+    .auth-heading {
+        font-size: 1.5rem;
+    }
+
+    .auth-btn {
+        padding: 0.75rem 1rem;
+    }
+}
+
+/* ---------- DARK MODE BACKGROUND ---------- */
+.dark body {
+    background: #0f172a;
 }

@@ -30,8 +30,8 @@
     <!-- MOBILE SIDEBAR OVERLAY -->
     <div id="sidebarOverlay" class="fixed inset-0 bg-black/50 z-20 hidden" onclick="closeSidebar()"></div>
 
-    <!-- LEFT SIDEBAR -->
-    <aside id="sidebar" class="bg-slate-900 text-slate-300 flex-col hidden md:flex z-30 shrink-0 shadow-2xl fixed md:relative inset-y-0 left-0 transition-all duration-300 ease-in-out w-64" data-expanded="true">
+    <!-- LEFT SIDEBAR – fixed on mobile (slide in), relative on desktop -->
+    <aside id="sidebar" class="bg-slate-900 text-slate-300 flex-col z-30 shadow-2xl fixed inset-y-0 left-0 w-64 transform -translate-x-full transition-transform duration-300 ease-in-out md:translate-x-0 md:relative md:flex" data-expanded="true">
         <!-- Sidebar Header -->
         <div class="p-5 border-b border-slate-800/80 flex items-center space-x-1 bg-slate-950/20">
             <span class="bg-primary text-white text-sm font-extrabold px-2.5 py-1.5 rounded-lg border border-primary/20 shadow-lg shrink-0 ml-10">
@@ -166,7 +166,7 @@
         </nav>
     </aside>
 
-    <!-- FLOATING RESTORE BUTTON -->
+    <!-- FLOATING RESTORE BUTTON (appears when sidebar collapsed on desktop) -->
     <button id="floatingSidebarToggle" class="hidden fixed top-4 left-4 z-40 bg-primary hover:bg-primaryDark text-white p-2 rounded-lg shadow-lg transition md:flex items-center justify-center" title="Show Sidebar">
         <i class="fa-solid fa-bars text-xl" id="floatingSidebarIcon"></i>
     </button>
@@ -176,12 +176,15 @@
         <!-- HEADER -->
         <header class="h-16 bg-white/90 backdrop-blur-md border-b border-slate-200 flex items-center justify-between px-4 sm:px-6 z-10 shrink-0 shadow-sm">
             <div class="flex items-center space-x-1">
+                <!-- Desktop toggle (always visible on md+) -->
                 <button id="headerSidebarToggle" class="hidden md:flex items-center justify-center p-1.5 rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition" title="Toggle Sidebar">
                     <i class="fa-solid fa-bars text-lg"></i>
                 </button>
+                <!-- Mobile hamburger -->
                 <button class="md:hidden text-slate-600" onclick="openSidebar()">
                     <i class="fa-solid fa-bars text-xl"></i>
                 </button>
+                <!-- Search bar -->
                 <div class="relative flex-1 max-w-md">
                     <input type="text" id="headerSearch" placeholder="Search..." class="w-full bg-slate-50 text-sm pl-9 pr-10 py-2 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition">
                     <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
@@ -191,7 +194,7 @@
                 </div>
             </div>
             <div class="flex items-center space-x-2 sm:space-x-4">
-                <!-- Only show Add Booking to roles that can create reservations -->
+                <!-- Add Booking (only for allowed roles) -->
                 {% if user.role in 'super_admin,owner,manager,receptionist' %}
                 <button id="openAddBookingModal" class="bg-primary hover:bg-primaryDark text-white px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold shadow-sm transition flex items-center space-x-1">
                     <i class="fa-solid fa-plus"></i> <span class="hidden sm:inline">Add Booking</span>
@@ -405,7 +408,7 @@
             document.getElementById('sidebarOverlay').classList.add('hidden');
         }
 
-        // Sidebar toggle
+        // Sidebar toggle (desktop)
         const sidebar = document.getElementById('sidebar');
         const floatingBtn = document.getElementById('floatingSidebarToggle');
         const headerToggle = document.getElementById('headerSidebarToggle');

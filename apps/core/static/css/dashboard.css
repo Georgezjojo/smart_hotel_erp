@@ -1,8 +1,120 @@
+/* ============================================
+   DASHBOARD SPECIFIC STYLES
+   ============================================ */
+
+/* -------- CHART CONTAINERS -------- */
 .chart-container {
     position: relative;
     width: 100%;
     max-height: 300px;
 }
+
+/* Allow charts to shrink on small screens */
+@media (max-width: 767px) {
+    .chart-container {
+        max-height: 220px;
+    }
+    /* Make chart canvases scale down */
+    .chart-container canvas {
+        max-width: 100% !important;
+        height: auto !important;
+    }
+}
+
+/* -------- ROOM TIMELINE -------- */
 .timeline-room {
     white-space: nowrap;
+    overflow-x: auto;
+    display: flex;
+    gap: 0.5rem;
+    padding-bottom: 0.5rem;
+    -webkit-overflow-scrolling: touch; /* smooth scroll on iOS */
+}
+
+/* Each room card inside the timeline */
+.timeline-room > div {
+    min-width: 120px;  /* minimum width so cards don’t squeeze */
+    flex-shrink: 0;
+}
+
+/* -------- DASHBOARD SUMMARY CARDS -------- */
+/* Make them stack nicely on mobile and have consistent spacing */
+.summary-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.summary-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+}
+
+@media (max-width: 767px) {
+    .summary-card {
+        padding: 1rem !important;
+    }
+    .summary-card h3 {
+        font-size: 1.1rem !important;
+    }
+    .summary-card p {
+        font-size: 0.9rem !important;
+    }
+}
+
+/* -------- ACTIVE RESERVATIONS / RECENT BOOKINGS -------- */
+/* Ensure tables and lists don't overflow */
+.reservation-list,
+.recent-bookings {
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+.reservation-list table,
+.recent-bookings table {
+    min-width: 600px;  /* allow horizontal scroll on very small screens */
+}
+
+/* -------- FILTER BUTTONS (All / Occupied / Available etc.) -------- */
+.filter-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.filter-buttons .btn,
+.filter-buttons button {
+    flex: 1 1 auto;
+    min-width: 80px;
+}
+
+/* -------- HOUSEKEEPING OVERVIEW (Clean / Dirty buttons) -------- */
+.housekeeping-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+/* -------- TODAY'S SPECIALS -------- */
+.specials-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1rem;
+}
+
+/* -------- GENERAL MOBILE TWEAKS FOR DASHBOARD -------- */
+@media (max-width: 767px) {
+    /* Make the main content area have less padding on mobile */
+    .dashboard-content {
+        padding: 1rem !important;
+    }
+
+    /* Ensure any embedded widgets don’t break */
+    iframe, video, object {
+        max-width: 100% !important;
+    }
+
+    /* Fix any oversized icons or avatars inside cards */
+    .dashboard-card-icon {
+        font-size: 1.5rem !important;
+    }
 }
